@@ -1,0 +1,24 @@
+?start: sum
+      | NAME "=" sum    -> assign_var
+
+?sum: multiplication
+    | sum "+" multiplication   -> add
+    | sum "-" multiplication   -> sub
+
+?multiplication: atom
+    | multiplication "*" atom  -> mul
+    | multiplication "/" atom  -> div
+
+// aggiungi sottrazione e divisione
+
+?atom: NUMBER           -> number
+     | "-" atom         -> neg
+     | NAME             -> var
+     | "(" sum ")"
+
+%import common.CNAME -> NAME
+%import common.NUMBER
+
+%import common.WS
+
+%ignore WS # ignore whitespaces, used built-in defined macro
