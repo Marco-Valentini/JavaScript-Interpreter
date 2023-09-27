@@ -16,6 +16,10 @@
      | NAME             -> var
      | "(" sum ")"
 
+// comment management (ignore them)
+COMMENT: "//" /[^\n]/* | "/*" /./* "*/"
+%ignore COMMENT
+
 %import common.CNAME -> NAME
 %import common.NUMBER
 
