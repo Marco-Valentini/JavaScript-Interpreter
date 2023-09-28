@@ -4,7 +4,6 @@
 ?statement: print_statement
             | input_statement
             | variable_declaration
-            | variable_assignment
             | expression ";"?
             | if_statement
             | while_statement
@@ -19,8 +18,8 @@
 
 ?input_statement: "prompt" "(" expression ")" ";"?
 
-?variable_declaration :("let"|"var"|"const")? IDENTIFIER ("=" expression)?
-?variable_assignment  : IDENTIFIER "=" expression
+?variable_declaration :("let"|"var"|"const") IDENTIFIER ("=" expression)?
+                      |("let"|"var"|"const")? IDENTIFIER ("=" expression)
 
 ?function_declaration : "function" IDENTIFIER "(" parameter_list? ")" block
 
@@ -30,13 +29,14 @@
 
 ?argument_list: (IDENTIFIER "=")? expression ("," (IDENTIFIER "=")? expression)*
 
-?if_statement : "if" "(" expression ")" statement ("else" statement)?  # this way we include all the possible cases, statement cn be a block or another if statement
+?return_statement: "return" expression? ";"?
 
+?if_statement : "if" "(" expression ")" statement ("else" statement)?  # this way we include all the possible cases, statement cn be a block or another if statement
+# TODO forse sarebbe più opportuno specificare una boolean condition piuttosto che generica expression
 ?while_statement  : "while" "(" expression ")" statement
 
-?expression: IDENTIFIER
-            | NUMBER
-            | STRING
+?expression: "(" expression ")"
+            | template_literal
             | "true" -> true
             | "false" -> false
             | "null" -> null
@@ -47,8 +47,19 @@
             | strict_equality  # equality with === in JS
             | relational
             | additive
-            | multiplicative
+            | term
             | unary
+            | array
+
+term : multiplicative
+     | factor
+     | "(" additive ")"
+     | "(" term ")"
+
+factor : STRING
+       | NUMBER
+       | IDENTIFIER
+       | IDENTIFIER "[" expression "]" -> vector_access
 
 ?array  : "[" [expression ("," expression)*] "]"  # TODO come valutare espressioni in place
 
@@ -67,29 +78,30 @@
             | expression "<=" expression -> less_than_or_equal
             | expression ">=" expression -> greater_than_or_equal
 
-?additive: expression "+" expression -> add  # TODO capisci come gestire precedenze e associatività (anche da slides)
-            | expression "-" expression -> sub
+additive: expression "+" expression -> add  # TODO capisci come gestire precedenze e associatività (anche da slides)
+           | expression "-" expression -> sub
 
-?multiplicative: expression "*" expression -> mul
-                | expression "/" expression -> div
+multiplicative: term "*" term -> mul
+               | term "/" term -> div
 
 ?unary: "-" expression -> neg  #TODO controlla come gestire - e a cosa applicarlo
         | "!" expression -> not_
 
-#TODO capisci come realizzare in termini di concateazione
+?template_literal: "`" (template_string_part | "${" expression "}")* "`"
+
+?template_string_part: /[^$`]+/
 
 STRING: "'" _STRING_INNER* "'"
-        | '"' _STRING_INNER* '"'
-        | "`" _STRING_INNER* "`"  # TODO nel backtick la valutaxione dei valori (come la f in python)
-
+        | "\"" _STRING_INNER* "\""
 
 
 // comment management (ignore them)
 COMMENT: "//" /[^\n]/* | "/*" /./* "*/"
 
+%import common.ESCAPED_STRING
 %import common._STRING_INNER
 %import common.CNAME -> IDENTIFIER
-%import common.NUMBER
+%import common.NUMBER  # TODO vedi se serve mettere unsigned
 %import common.WS
 
 %ignore COMMENT
