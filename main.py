@@ -7,7 +7,11 @@ from lark import Lark, Transformer, v_args
 class TreeToJS(Transformer):
 
     def print_statement(self, args):
-        return args[0]
+        print(args[0])
+
+    def input_statement(self, args):
+        a = input(args[0])
+        return a
 
     def variable_declaration(self, args):
         pass

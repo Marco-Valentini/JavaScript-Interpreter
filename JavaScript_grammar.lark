@@ -16,7 +16,7 @@
 
 ?print_statement: "console" "." "log" "(" expression ")" ";"?
 
-?input_statement: "prompt" "(" expression ")" ";"?
+?input_statement: "prompt" "(" STRING ")" ";"?
 
 ?variable_declaration :("let"|"var"|"const") IDENTIFIER ("=" expression)?
                       |("let"|"var"|"const")? IDENTIFIER ("=" expression)
