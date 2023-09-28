@@ -1,28 +1,62 @@
-?start: sum
-      | NAME "=" sum    -> assign_var
+?start: statement+
 
-?sum: multiplication
-    | sum "+" multiplication   -> add
-    | sum "-" multiplication   -> sub
+?statement: print_statement
+            | variable_declaration
+            | expression ";"?
 
-?multiplication: atom
-    | multiplication "*" atom  -> mul
-    | multiplication "/" atom  -> div
+?print_statement: "console" "." "log" "(" expression ")" ";"?
 
-// aggiungi sottrazione e divisione
+?expression: IDENTIFIER
+            | NUMBER
+            | STRING
+            | "true" -> true
+            | "false" -> false
+            | "null" -> null
+            | logical_or
+            | logical_and
+            | equality
+            | strict_equality
+            | relational
+            | additive
+            | multiplicative
+            | unary
 
-?atom: NUMBER           -> number
-     | "-" atom         -> neg
-     | NAME             -> var
-     | "(" sum ")"
+?variable_declaration: "let" IDENTIFIER "=" expression ";"?
+
+?logical_or: expression "||" expression
+
+?logical_and: expression "&&" expression
+
+?equality: expression "==" expression
+            | expression "!=" expression -> inequality
+
+?strict_equality: expression "===" expression
+                    | expression "!==" expression -> strict_inequality
+
+?relational: expression "<" expression -> less_than
+            | expression ">" expression -> greater_than
+            | expression "<=" expression -> less_than_or_equal
+            | expression ">=" expression -> greater_than_or_equal
+
+?additive: expression "+" expression -> add
+            | expression "-" expression -> sub
+
+?multiplicative: expression "*" expression -> mul
+                | expression "/" expression -> div
+
+?unary: "-" expression -> neg
+        | "!" expression -> not_
+
+STRING: /".*"/
+        | /'.*'/
+
 
 // comment management (ignore them)
 COMMENT: "//" /[^\n]/* | "/*" /./* "*/"
 %ignore COMMENT
 
-%import common.CNAME -> NAME
+%import common.CNAME -> IDENTIFIER
 %import common.NUMBER
-
 %import common.WS
+%ignore WS
 
-%ignore WS # ignore whitespaces, used built-in defined macro
