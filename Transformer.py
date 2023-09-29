@@ -28,22 +28,35 @@ class TreeToJS(Transformer):
         return input(args[0])
 
     def variable_statement(self, args):
-        if len(args) == 2: # variable declaration (es. let a)
+        if len(args) == 2:  # variable declaration (es. let a)
             symbol_table.insert(args[1].value, {'declaration': args[0].value, 'value': 'undefined', 'type': 'undefined'})
             return 'undefined'
         elif len(args) == 3: # variable assignment (es. a = 2)
             #TODO gestire SyntaxError identifier already declared (es. const a = 2; let a = 3;) fai check su symbol_table[args[0].value]['declaration'] == 'const'
             if args[0].value in symbol_table.table.keys():
                 symbol_table.update(args[0].value, {'declaration': symbol_table.find(args[0].value)['declaration'], 'value': args[2], 'type': type(args[2])})
-            else: # the variable has not been declared yet
+            else:  # the variable has not been declared yet
                 symbol_table.insert(args[0].value, {'declaration': 'var', 'value': args[2], 'type': type(args[2])})
             return args[2]
-        elif len(args) == 4: # variable declaration and assignment (es. let a = 2)
+        elif len(args) == 4:  # variable declaration and assignment (es. let a = 2)
             #TODO gestire SyntaxError identifier already declared (es. const a = 2; let a = 3;)
             symbol_table.insert(args[1].value, {'declaration': args[0].value, 'value': args[3], 'type': type(args[3])})
             return args[3]
 
-
+    def variable_assignment(self, args):
+        if args[1] == '+=':
+            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] + args[2], 'type': type(symbol_table.find(args[0])['value'] + args[2])})
+        elif args[1] == '-=':
+            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] - args[2], 'type': type(symbol_table.find(args[0])['value'] - args[2])})
+        elif args[1] == '*=':
+            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] * args[2], 'type': type(symbol_table.find(args[0])['value'] * args[2])})
+        elif args[1] == '/=':
+            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] / args[2], 'type': type(symbol_table.find(args[0])['value'] / args[2])})
+        elif args[1] == '++':
+            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] + 1, 'type': type(symbol_table.find(args[0])['value'] + 1)})
+        elif args[1] == '--':
+            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] - 1, 'type': type(symbol_table.find(args[0])['value'] - 1)})
+        return symbol_table.find(args[0])['value']
 
     def logical_and(self, args):
         return args[0] and args[1]
