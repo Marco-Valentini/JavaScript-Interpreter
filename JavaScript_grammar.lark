@@ -1,13 +1,13 @@
 # Grammar is composed of definitions (named literals and named terminals) and some directives (at the end)
 ?start: statement+ // a program is composed of one or more statement
 
-?statement: print_statement
-            | input_statement
-            | variable_statement
+?statement: print_statement ";"?
+            | input_statement ";"?
+            | variable_statement ";"?
             | expression ";"?
             | if_statement
             | while_statement
-            | return_statement
+            | return_statement ";"?
             | function_declaration
             | function_call ";"?
             | block
@@ -31,8 +31,10 @@ input_statement: "prompt" "(" expression ")" ";"? # prompt can take whatever inp
                     | IDENTIFIER "/=" expression
                     | IDENTIFIER "++"
                     | IDENTIFIER "--"
+                    | "++" IDENTIFIER
+                    | "--" IDENTIFIER
 
-?function_declaration : "function" IDENTIFIER "(" parameter_list? ")" block
+!function_declaration : "function" IDENTIFIER "(" parameter_list? ")" block
 
 ?parameter_list: IDENTIFIER ("," IDENTIFIER)*
 
@@ -44,7 +46,6 @@ input_statement: "prompt" "(" expression ")" ";"? # prompt can take whatever inp
 
 # branching production
 ?if_statement : "if" "(" expression ")" statement ("else" statement)?  # this way we include all the possible cases, statement cn be a block or another if statement
-
 
 # iteration production
 ?while_statement  : "while" "(" expression ")" statement
@@ -63,6 +64,7 @@ input_statement: "prompt" "(" expression ")" ";"? # prompt can take whatever inp
             | logical_not
             | negative
             | array
+            | variable_assignment
 
 term : multiplicative
      | factor

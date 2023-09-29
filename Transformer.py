@@ -44,7 +44,13 @@ class TreeToJS(Transformer):
             return args[3]
 
     def variable_assignment(self, args):
-        if args[1] == '+=':
+        #TODO gestire se la variabile non è stata dichiarata, se il valore non è un numero
+        if args[0] == '++':
+            symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': symbol_table.find(args[1])['value'] + 1, 'type': type(symbol_table.find(args[1])['value'] + 1)})
+            return symbol_table.find(args[1])['value']
+        elif args[0] == '--':
+            symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': symbol_table.find(args[1])['value'] - 1, 'type': type(symbol_table.find(args[1])['value'] - 1)})
+        elif args[1] == '+=':
             symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] + args[2], 'type': type(symbol_table.find(args[0])['value'] + args[2])})
         elif args[1] == '-=':
             symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] - args[2], 'type': type(symbol_table.find(args[0])['value'] - args[2])})
@@ -53,10 +59,14 @@ class TreeToJS(Transformer):
         elif args[1] == '/=':
             symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] / args[2], 'type': type(symbol_table.find(args[0])['value'] / args[2])})
         elif args[1] == '++':
+            value = symbol_table.find(args[0])['value']
             symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] + 1, 'type': type(symbol_table.find(args[0])['value'] + 1)})
+            return value
         elif args[1] == '--':
+            value = symbol_table.find(args[0])['value']
             symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] - 1, 'type': type(symbol_table.find(args[0])['value'] - 1)})
-        return symbol_table.find(args[0])['value']
+            return value
+        return symbol_table.find(args[1])['value']
 
     def logical_and(self, args):
         return args[0] and args[1]
@@ -85,7 +95,6 @@ class TreeToJS(Transformer):
     def add(self, args):
         return args[0] + args[1]
 
-
     def sub(self, args):
         return args[0] - args[1]
 
@@ -94,7 +103,6 @@ class TreeToJS(Transformer):
 
     def div(self, args):
         return args[0] / args[1]
-
 
     def negative(self, args):
         return -int(args[0])
