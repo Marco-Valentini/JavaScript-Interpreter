@@ -34,9 +34,6 @@ class TreeToJS(Transformer):
     def logical_or(self, args):
         return args[0] or args[1]
 
-    def logical_not(self, args):
-        return not args[0]
-
     def equality(self, args):
         return args[0] == args[1]
 
