@@ -2,7 +2,7 @@ from lark import Lark
 from Transformer import TreeToJS
 
 # the grammar is contained in the file JavaScript_grammar.lark
-parser = Lark.open("JavaScript_grammar.lark", parser='lalr',transformer=TreeToJS(), ambiguity="explicit", debug=True)  # TODO capire quale lexer utilizzare
+parser = Lark.open("JavaScript_grammar.lark", parser='lalr',transformer=TreeToJS(), debug=True)  # TODO capire quale lexer utilizzare
 
 
 def main():
