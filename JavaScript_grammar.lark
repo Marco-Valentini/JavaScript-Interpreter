@@ -3,7 +3,7 @@
 
 ?statement: print_statement
             | input_statement
-            | variable_declaration
+            | variable_statement
             | expression ";"?
             | if_statement
             | while_statement
@@ -11,15 +11,17 @@
             | function_declaration
             | function_call ";"?
             | block
+# TODO valutare se nel loop aggiungere continue e break statement come produzione di statement
 
 ?block: "{" statement* "}"
 
 ?print_statement: "console" "." "log" "(" expression ")" ";"?
 
-?input_statement: "prompt" "(" STRING ")" ";"?
+input_statement: "prompt" "(" expression ")" ";"? # prompt can take whatever input you give to it
 
-?variable_declaration :("let"|"var"|"const") IDENTIFIER ("=" expression)?
-                      |("let"|"var"|"const")? IDENTIFIER ("=" expression)
+# the ! is required to not filter keywords like let/const/var
+!variable_statement :("let"|"var"|"const") IDENTIFIER ("=" expression)?
+                      |("let"|"var"|"const")? IDENTIFIER ("=" expression)  # we can define but not assign a variable or vice versa
 
 ?function_declaration : "function" IDENTIFIER "(" parameter_list? ")" block
 
@@ -31,14 +33,15 @@
 
 ?return_statement: "return" expression? ";"?
 
+# branching production
 ?if_statement : "if" "(" expression ")" statement ("else" statement)?  # this way we include all the possible cases, statement cn be a block or another if statement
-# TODO forse sarebbe più opportuno specificare una boolean condition piuttosto che generica expression
+
+
+# iteration production
 ?while_statement  : "while" "(" expression ")" statement
 
 ?expression: "(" expression ")"
             | template_literal
-            | "true" -> true
-            | "false" -> false
             | "null" -> null
             | "undefined" -> undefined
             | logical_or
@@ -48,7 +51,8 @@
             | relational
             | additive
             | term
-            | unary
+            | logical_not
+            | negative
             | array
 
 term : multiplicative
@@ -58,14 +62,17 @@ term : multiplicative
 
 factor : STRING
        | NUMBER
+       | BOOL
        | IDENTIFIER
        | IDENTIFIER "[" expression "]" -> vector_access
 
 ?array  : "[" [expression ("," expression)*] "]"  # TODO come valutare espressioni in place
 
 ?logical_or: expression "||" expression
+           | "(" logical_or ")"
 
 ?logical_and: expression "&&" expression
+            | "(" logical_and ")"
 
 ?equality: expression "==" expression  # TODO verifica se serve rinominare per far funzionare
             | expression "!=" expression -> inequality
@@ -77,6 +84,7 @@ factor : STRING
             | expression ">" expression -> greater_than
             | expression "<=" expression -> less_than_or_equal
             | expression ">=" expression -> greater_than_or_equal
+            | "(" relational ")"
 
 additive: expression "+" expression -> add  # TODO capisci come gestire precedenze e associatività (anche da slides)
            | expression "-" expression -> sub
@@ -84,12 +92,17 @@ additive: expression "+" expression -> add  # TODO capisci come gestire preceden
 multiplicative: term "*" term -> mul
                | term "/" term -> div
 
-?unary: "-" expression -> neg  #TODO controlla come gestire - e a cosa applicarlo
-        | "!" expression -> not_
+logical_not: "!" expression
+            | "!" "(" logical_not ")"
+
+negative: "-" expression
+         | "-" "(" negative ")"
 
 ?template_literal: "`" (template_string_part | "${" expression "}")* "`"
 
 ?template_string_part: /[^$`]+/
+
+BOOL .1: "true" | "false"
 
 STRING: "'" _STRING_INNER* "'"
         | "\"" _STRING_INNER* "\""

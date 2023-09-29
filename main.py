@@ -4,7 +4,6 @@ from Transformer import TreeToJS
 # the grammar is contained in the file JavaScript_grammar.lark
 parser = Lark.open("JavaScript_grammar.lark", parser='lalr',transformer=TreeToJS(), debug=True)  # TODO capire quale lexer utilizzare
 
-
 def main():
     while True:
         try:
@@ -12,6 +11,7 @@ def main():
         except EOFError:
             break
         print(parser.parse(s))
+
 
 if __name__ == '__main__':
     main()

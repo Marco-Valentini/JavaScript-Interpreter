@@ -7,11 +7,14 @@
 
 
 from lark.visitors import Transformer
+from SymbolTable import SymbolTable
 
 # TODO capire se mettere v_args inline=True o no
 # con v_args si possono specificare una serie di parametri: inline (i children dell'albero sono passati come *args e non come una lista)
 #  meta (if meta=True) dà una serie di info come riga e colonna a cui ci troviamo
 # TODO l'interpreter sembra una sorta di estensione del transformer, dove ad esempio si aggiunge la gestione dell'if o del while
+
+symbol_table = SymbolTable()
 class TreeToJS(Transformer):
     """
     This class extends Lark's transformer class, which provides a convenient interface to process the parse tree that
@@ -22,11 +25,25 @@ class TreeToJS(Transformer):
         print(args[0])
 
     def input_statement(self, args):
-        a = input(args[0])
-        return a
+        return input(args[0])
 
-    def variable_declaration(self, args):
-        pass
+    def variable_statement(self, args):
+        if len(args) == 2: # variable declaration (es. let a)
+            symbol_table.insert(args[1].value, {'declaration': args[0].value, 'value': 'undefined', 'type': 'undefined'})
+            return 'undefined'
+        elif len(args) == 3: # variable assignment (es. a = 2)
+            #TODO gestire SyntaxError identifier already declared (es. const a = 2; let a = 3;) fai check su symbol_table[args[0].value]['declaration'] == 'const'
+            if args[0].value in symbol_table.table.keys():
+                symbol_table.update(args[0].value, {'declaration': symbol_table.find(args[0].value)['declaration'], 'value': args[2], 'type': type(args[2])})
+            else: # the variable has not been declared yet
+                symbol_table.insert(args[0].value, {'declaration': 'var', 'value': args[2], 'type': type(args[2])})
+            return args[2]
+        elif len(args) == 4: # variable declaration and assignment (es. let a = 2)
+            #TODO gestire SyntaxError identifier already declared (es. const a = 2; let a = 3;)
+            symbol_table.insert(args[1].value, {'declaration': args[0].value, 'value': args[3], 'type': type(args[3])})
+            return args[3]
+
+
 
     def logical_and(self, args):
         return args[0] and args[1]
@@ -66,11 +83,10 @@ class TreeToJS(Transformer):
         return args[0] / args[1]
 
 
-    def neg(self, args):
-        if args[0].type == 'NUMBER' and args[0].type == 'NUMBER':
-            return -int(args[0])
+    def negative(self, args):
+        return -int(args[0])
 
-    def not_(self, args):
+    def logical_not(self, args):
         return not args[0]
 
     def template_literal(self, args):
@@ -92,6 +108,13 @@ class TreeToJS(Transformer):
             return float(args[0].value)
         elif args[0].type == 'STRING':
             return str(args[0].value[1:-1])
+        elif args[0].type == 'BOOL':
+            if args[0].value == 'true':
+                return True
+            else:
+                return False
+        elif args[0].type == 'IDENTIFIER':
+            return symbol_table.find(args[0].value)['value']
         return args[0].value
 
     def term(self, args):
