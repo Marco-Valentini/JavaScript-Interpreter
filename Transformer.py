@@ -78,40 +78,412 @@ class TreeToJS(Transformer):
         return args[0] or args[1]
 
     def equality(self, args):
-        return args[0] == args[1]
+        """
+        This method is used to check if two values are equal. It simulates the JavaScript type coercition
+        :param args:
+        :return:
+        """
+        if type(args[0]) == type(args[1]):
+            return args[0] == args[1]
+        else:
+            if type(args[0]) == str and type(args[1]) == float:
+                return float(args[0]) == args[1]
+            elif type(args[0]) == float and type(args[1]) == str:
+                return args[0] == float(args[1])
+            elif type(args[0]) == float and type(args[1]) == bool:
+                if args[1]:
+                    return args[0] == 1
+                else:
+                    return args[0] == 0
+            elif type(args[0]) == bool and type(args[1]) == float:
+                if args[0]:
+                    return 1 == args[1]
+                else:
+                    return 0 == args[1]
+            else:
+                return False
 
     def inequality(self, args):
+        """
+        This method is used to check if two values are not equal. It simulates the JavaScript type coercition
+        :param args:
+        :return:
+        """
+        if type(args[0]) == type(args[1]):
+            return args[0] != args[1]
+        else:
+            if type(args[0]) == str and type(args[1]) == float:
+                return float(args[0]) != args[1]
+            elif type(args[0]) == float and type(args[1]) == str:
+                return args[0] != float(args[1])
+            elif type(args[0]) == float and type(args[1]) == bool:
+                if args[1]:
+                    return args[0] != 1
+                else:
+                    return args[0] != 0
+            elif type(args[0]) == bool and type(args[1]) == float:
+                if args[0]:
+                    return 1 != args[1]
+                else:
+                    return 0 != args[1]
+            else:
+                return True
+
+    def strict_equality(self, args):
+        """
+        This method is used to check if two values are equal. It is the === JavaScript operator,
+        so does not simulate the JavaScript type coercition
+        :param args:
+        :return:
+        """
+        return args[0] == args[1]
+
+    def strict_inequality(self, args):
+        """
+        This method is used to check if two values are not equal. It is the !== JavaScript operator,
+        so does not simulate the JavaScript type coercition
+        :param args:
+        :return:
+        """
         return args[0] != args[1]
 
     def greater_than(self, args):
-        return args[0] > args[1]
+        """
+        This method is used to check if the first value is greater than the second one. It simulates the JavaScript type coercition
+        :param args:
+        :return:
+        """
+        if type(args[0]) == type(args[1]):
+            return args[0] > args[1]
+        else:
+            if type(args[0]) == str and type(args[1]) == float:
+                return float(args[0]) > args[1]
+            elif type(args[0]) == float and type(args[1]) == str:
+                return args[0] > float(args[1])
+            elif type(args[0]) == float and type(args[1]) == bool:
+                if args[1]:
+                    return args[0] > 1
+                else:
+                    return args[0] > 0
+            elif type(args[0]) == bool and type(args[1]) == float:
+                if args[0]:
+                    return 1 > args[1]
+                else:
+                    return 0 > args[1]
+            else:
+                return False
 
     def greater_than_or_equal(self, args):
-        return args[0] >= args[1]
+        """
+        This method is used to check if the first value is greater than or equal to the second one. It simulates the JavaScript type coercition
+        :param args:
+        :return:
+        """
+        if type(args[0]) == type(args[1]):
+            return args[0] >= args[1]
+        else:
+            if type(args[0]) == str and type(args[1]) == float:
+                return float(args[0]) >= args[1]
+            elif type(args[0]) == float and type(args[1]) == str:
+                return args[0] >= float(args[1])
+            elif type(args[0]) == float and type(args[1]) == bool:
+                if args[1]:
+                    return args[0] >= 1
+                else:
+                    return args[0] >= 0
+            elif type(args[0]) == bool and type(args[1]) == float:
+                if args[0]:
+                    return 1 >= args[1]
+                else:
+                    return 0 >= args[1]
+            else:
+                return False
 
     def less_than(self, args):
-        return args[0] < args[1]
+        """
+        This method is used to check if the first value is less than the second one. It simulates the JavaScript type coercition
+        :param args:
+        :return:
+        """
+        if type(args[0]) == type(args[1]):
+            return args[0] < args[1]
+        else:
+            if type(args[0]) == str and type(args[1]) == float:
+                return float(args[0]) < args[1]
+            elif type(args[0]) == float and type(args[1]) == str:
+                return args[0] < float(args[1])
+            elif type(args[0]) == float and type(args[1]) == bool:
+                if args[1]:
+                    return args[0] < 1
+                else:
+                    return args[0] < 0
+            elif type(args[0]) == bool and type(args[1]) == float:
+                if args[0]:
+                    return 1 < args[1]
+                else:
+                    return 0 < args[1]
+            else:
+                return False
 
     def less_than_or_equal(self, args):
-        return args[0] <= args[1]
+        """
+        This method is used to check if the first value is less than or equal to the second one. It simulates the JavaScript type coercition
+        :param args:
+        :return:
+        """
+        if type(args[0]) == type(args[1]):
+            return args[0] <= args[1]
+        else:
+            if type(args[0]) == str and type(args[1]) == float:
+                return float(args[0]) <= args[1]
+            elif type(args[0]) == float and type(args[1]) == str:
+                return args[0] <= float(args[1])
+            elif type(args[0]) == float and type(args[1]) == bool:
+                if args[1]:
+                    return args[0] <= 1
+                else:
+                    return args[0] <= 0
+            elif type(args[0]) == bool and type(args[1]) == float:
+                if args[0]:
+                    return 1 <= args[1]
+                else:
+                    return 0 <= args[1]
+            else:
+                return False
 
     def add(self, args):
-        return args[0] + args[1]
+        """
+        This method is used to add two values. It simulates the JavaScript type coercition
+        :param args:
+        :return:
+        """
+        if (type(args[0]) == type(args[1])) or \
+                (type(args[0]) == float and type(args[1]) == bool) or \
+                (type(args[0]) == bool and type(args[1]) == float):
+            return args[0] + args[1]
+        else:
+            if type(args[0]) == str and type(args[1]) == float:
+                return args[0] + str(args[1])
+            elif type(args[0]) == float and type(args[1]) == str:
+                return str(args[0]) + args[1]
+            elif type(args[0]) == str and type(args[1]) == bool:
+                if args[1]:
+                    return args[0] + "true"
+                else:
+                    return args[0] + "false"
+            elif type(args[0]) == bool and type(args[1]) == str:
+                if args[0]:
+                    return "true" + args[1]
+                else:
+                    return "false" + args[1]
+            else:
+                return 'NaN'
 
     def sub(self, args):
-        return args[0] - args[1]
+        """
+        This method is used to subtract two values. It simulates the JavaScript type coercition
+        :param args:
+        :return:
+        """
+        if (type(args[0]) == type(args[1])) or \
+                (type(args[0]) == float and type(args[1]) == bool) or \
+                (type(args[0]) == bool and type(args[1]) == float):
+            return args[0] - args[1]
+        else:
+            if type(args[0]) == str and type(args[1]) == float:
+                if args[0].isnumeric():
+                    return float(args[0]) - args[1]
+                else:
+                    return 'NaN'
+            elif type(args[0]) == float and type(args[1]) == str:
+                if args[1].isnumeric():
+                    return args[0] - float(args[1])
+                else:
+                    return 'NaN'
+            elif type(args[0]) == float and type(args[1]) == bool:
+                if args[1]:
+                    return args[0] - 1
+                else:
+                    return args[0] - 0
+            elif type(args[0]) == bool and type(args[1]) == float:
+                if args[0]:
+                    return 1 - args[1]
+                else:
+                    return 0 - args[1]
+            elif type(args[0]) == bool and type(args[1]) == str:
+                if args[0]:
+                    if args[1].isnumeric():
+                        return 1 - float(args[1])
+                    else:
+                        return 'NaN'
+                else:
+                    if args[1].isnumeric():
+                        return 0 - float(args[1])
+                    else:
+                        return 'NaN'
+            elif type(args[0]) == str and type(args[1]) == bool:
+                if args[1]:
+                    if args[0].isnumeric():
+                        return float(args[0]) - 1
+                    else:
+                        return 'NaN'
+                else:
+                    if args[0].isnumeric():
+                        return float(args[0]) - 0
+                    else:
+                        return 'NaN'
+            else:
+                return 'NaN'
 
     def mul(self, args):
-        return args[0] * args[1]
+        """
+        This method is used to multiply two values. It simulates the JavaScript type coercition
+        :param args:
+        :return:
+        """
+        if type(args[0]) == type(args[1]):
+            return args[0] * args[1]
+        else:
+            if type(args[0]) == str and type(args[1]) == float:
+                if args[0].isnumeric():
+                    return float(args[0]) * args[1]
+                else:
+                    return 'NaN'
+            elif type(args[0]) == float and type(args[1]) == str:
+                if args[1].isnumeric():
+                    return args[0] * float(args[1])
+                else:
+                    return 'NaN'
+            elif type(args[0]) == float and type(args[1]) == bool:
+                if args[1]:
+                    return args[0] * 1
+                else:
+                    return args[0] * 0
+            elif type(args[0]) == bool and type(args[1]) == float:
+                if args[0]:
+                    return 1 * args[1]
+                else:
+                    return 0 * args[1]
+            elif type(args[0]) == bool and type(args[1]) == str:
+                if args[0]:
+                    if args[1].isnumeric():
+                        return 1 * float(args[1])
+                    else:
+                        return 'NaN'
+                else:
+                    if args[1].isnumeric():
+                        return 0 * float(args[1])
+                    else:
+                        return 'NaN'
+            elif type(args[0]) == str and type(args[1]) == bool:
+                if args[1]:
+                    if args[0].isnumeric():
+                        return float(args[0]) * 1
+                    else:
+                        return 'NaN'
+                else:
+                    if args[0].isnumeric():
+                        return float(args[0]) * 0
+                    else:
+                        return 'NaN'
+            else:
+                return 'NaN'
 
     def div(self, args):
-        return args[0] / args[1]
+        """
+        This method is used to divide two values. It simulates the JavaScript type coercition
+        :param args:
+        :return:
+        """
+        if type(args[0]) == type(args[1]):
+            return args[0] / args[1]
+        else:
+            if type(args[0]) == str and type(args[1]) == float:
+                if args[0].isnumeric():
+                    return float(args[0]) / args[1]
+                else:
+                    return 'NaN'
+            elif type(args[0]) == float and type(args[1]) == str:
+                if args[1].isnumeric():
+                    return args[0] / float(args[1])
+                else:
+                    return 'NaN'
+            elif type(args[0]) == float and type(args[1]) == bool:
+                if args[1]:
+                    return args[0] / 1
+                else:
+                    return args[0] / 0
+            elif type(args[0]) == bool and type(args[1]) == float:
+                if args[0]:
+                    return 1 / args[1]
+                else:
+                    return 0 / args[1]
+            elif type(args[0]) == bool and type(args[1]) == str:
+                if args[0]:
+                    if args[1].isnumeric():
+                        return 1 / float(args[1])
+                    else:
+                        return 'NaN'
+                else:
+                    if args[1].isnumeric():
+                        return 0 / float(args[1])
+                    else:
+                        return 'NaN'
+            elif type(args[0]) == str and type(args[1]) == bool:
+                if args[1]:
+                    if args[0].isnumeric():
+                        return float(args[0]) / 1
+                    else:
+                        return 'NaN'
+                else:
+                    if args[0].isnumeric():
+                        return float(args[0]) / 0
+                    else:
+                        return 'NaN'
+            else:
+                return 'NaN'
 
     def negative(self, args):
-        return -int(args[0])
+        """
+        This method is used to negate a value. It simulates the JavaScript type coercition
+        :param args:
+        :return:
+        """
+        if type(args[0]) == float:
+            return -args[0]
+        elif type(args[0]) == bool:
+            if args[0]:
+                return -1
+            else:
+                return -0
+        elif type(args[0]) == str:
+            if args[0].isnumeric():
+                return -float(args[0])
+            else:
+                return 'NaN'
+        else:
+            return 'NaN'
 
     def logical_not(self, args):
-        return not args[0]
+        """
+        This method is used to negate a boolean value. It simulates the JavaScript type coercition
+        :param args:
+        :return:
+        """
+        if type(args[0]) == bool:
+            return not args[0]
+        elif type(args[0]) == float:
+            if args[0] == 0:
+                return True
+            else:
+                return False
+        elif type(args[0]) == str:
+            if args[0] == '':
+                return True
+            else:
+                return False
+        else:
+            return False
 
     def template_literal(self, args):
         temp = ""

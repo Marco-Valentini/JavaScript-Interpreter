@@ -20,10 +20,19 @@ class JavaScriptInterpreter(Interpreter):
         return self.visit_children(tree)
 
     def if_statement(self, tree):
-        pass
+        condition = js_transformer.transform(tree.children[0])
+        if condition not in ['undefined', 'null', 'NaN', False, 0, ""]:
+            return self.visit(tree.children[1])
+        elif len(tree.children) == 3:
+            return self.visit(tree.children[2])
 
     def while_statement(self, tree):
-        pass
+        condition = js_transformer.transform(tree.children[0])
+        while condition not in ['undefined', 'null', 'NaN', False, 0, ""]:
+            val = self.visit(tree.children[1])
+            condition = js_transformer.transform(tree.children[0])
+        return val[-1]
+
 
     def function_declaration(self, tree):
         declaration = tree.children[0]
@@ -124,6 +133,12 @@ class JavaScriptInterpreter(Interpreter):
     def inequality(self, tree):
         return js_transformer.transform(tree)
 
+    def strict_equality(self, tree):
+        return js_transformer.transform(tree)
+
+    def strict_inequality(self, tree):
+        return js_transformer.transform(tree)
+
     def greater_than(self, tree):
         return js_transformer.transform(tree)
 
@@ -135,6 +150,7 @@ class JavaScriptInterpreter(Interpreter):
 
     def less_than_or_equal(self, tree):
         return js_transformer.transform(tree)
+
     def add(self, tree):
         return js_transformer.transform(tree)
 
