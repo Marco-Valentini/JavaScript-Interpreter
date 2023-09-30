@@ -66,7 +66,7 @@ class TreeToJS(Transformer):
             value = symbol_table.find(args[0])['value']
             symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] - 1, 'type': type(symbol_table.find(args[0])['value'] - 1)})
             return value
-        return symbol_table.find(args[1])['value']
+        return symbol_table.find(args[0])['value']
 
     def logical_and(self, args):
         return args[0] and args[1]
