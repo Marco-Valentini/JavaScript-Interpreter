@@ -38,11 +38,11 @@ input_statement: "prompt" "(" expression ")" ";"? # prompt can take whatever inp
 
 ?parameter_list: IDENTIFIER ("," IDENTIFIER)*
 
-?function_call: IDENTIFIER "(" argument_list? ")"
+!function_call: IDENTIFIER "(" argument_list? ")"
 
 ?argument_list: (IDENTIFIER "=")? expression ("," (IDENTIFIER "=")? expression)*
 
-?return_statement: "return" expression? ";"?
+!return_statement: "return" expression? ";"?
 
 # branching production
 ?if_statement : "if" "(" expression ")" statement ("else" statement)?  # this way we include all the possible cases, statement cn be a block or another if statement

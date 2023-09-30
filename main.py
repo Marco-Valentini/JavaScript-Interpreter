@@ -7,10 +7,12 @@ parser = Lark.open("JavaScript_grammar.lark", parser='lalr', debug=True)  # TODO
 def main():
     while True:
         try:
-            s = input('JS>>> ')
+            console = input('JS>>> ')
+            if console == "":
+                continue
         except EOFError:
             break
-        tree = parser.parse(s)
+        tree = parser.parse(console)
         interpeted_tree = JavaScriptInterpreter().visit(tree)
         print(interpeted_tree)
 

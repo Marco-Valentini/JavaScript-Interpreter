@@ -7,20 +7,20 @@
 
 
 from lark.visitors import Transformer
-from SymbolTable import SymbolTable
+from SymbolTable import symbol_table
 
 # TODO capire se mettere v_args inline=True o no
 # con v_args si possono specificare una serie di parametri: inline (i children dell'albero sono passati come *args e non come una lista)
 #  meta (if meta=True) dà una serie di info come riga e colonna a cui ci troviamo
 # TODO l'interpreter sembra una sorta di estensione del transformer, dove ad esempio si aggiunge la gestione dell'if o del while
 
-symbol_table = SymbolTable()
+
+
 class TreeToJS(Transformer):
     """
     This class extends Lark's transformer class, which provides a convenient interface to process the parse tree that
     Lark returns. Each method of the class corresponds to one of the rules in the grammar.
     """
-
     def print_statement(self, args):
         print(args[0])
 
@@ -31,7 +31,7 @@ class TreeToJS(Transformer):
         if len(args) == 2:  # variable declaration (es. let a)
             symbol_table.insert(args[1].value, {'declaration': args[0].value, 'value': 'undefined', 'type': 'undefined'})
             return 'undefined'
-        elif len(args) == 3: # variable assignment (es. a = 2)
+        elif len(args) == 3:  # variable assignment (es. a = 2)
             #TODO gestire SyntaxError identifier already declared (es. const a = 2; let a = 3;) fai check su symbol_table[args[0].value]['declaration'] == 'const'
             if args[0].value in symbol_table.table.keys():
                 symbol_table.update(args[0].value, {'declaration': symbol_table.find(args[0].value)['declaration'], 'value': args[2], 'type': type(args[2])})
@@ -67,6 +67,9 @@ class TreeToJS(Transformer):
             symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] - 1, 'type': type(symbol_table.find(args[0])['value'] - 1)})
             return value
         return symbol_table.find(args[0])['value']
+
+    def return_statement(self, args):
+        return args[1]
 
     def logical_and(self, args):
         return args[0] and args[1]

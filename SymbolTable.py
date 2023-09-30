@@ -43,3 +43,5 @@ class SymbolTable:
             elif attributes['type'] == list:
                 attributes['type'] = 'Array'
         self.table[identifier] = attributes
+
+symbol_table = SymbolTable()
