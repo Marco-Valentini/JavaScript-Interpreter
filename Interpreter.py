@@ -206,3 +206,9 @@ class JavaScriptInterpreter(Interpreter):
 
     def expression(self, tree):
         return js_transformer.transform(tree)
+
+    def array(self, tree):
+        return js_transformer.transform(tree)
+
+    def array_access(self, tree):
+        return js_transformer.transform(tree)

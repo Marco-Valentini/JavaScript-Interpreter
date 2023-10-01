@@ -20,8 +20,6 @@
                   | logical_not
                   | relational  # <, >, <=, >=
 
-# TODO valutare se nel loop aggiungere continue e break statement come produzione di statement
-
 ?block: "{" statement* "}"
 
 ?print_statement: "console" "." "log" "(" expression ")" ";"?
@@ -82,9 +80,10 @@ factor : STRING
        | FLOAT
        | BOOL
        | IDENTIFIER
-       | IDENTIFIER "[" expression "]" -> vector_access
+       | IDENTIFIER "[" expression "]" -> array_access
 
-?array  : "[" [expression ("," expression)*] "]"  # TODO come valutare espressioni in place
+
+?array  : "[" [expression ("," expression)*] "]"
 
 ?logical_or: logical_statement "||" logical_statement
            | "(" logical_or ")"
@@ -95,7 +94,7 @@ factor : STRING
 logical_not: "!" logical_statement
             | "!" "(" logical_not ")"
 
-?equality: expression "==" expression  # TODO verifica se serve rinominare per far funzionare
+?equality: expression "==" expression
             | expression "!=" expression -> inequality
 
 ?strict_equality: expression "===" expression
@@ -109,13 +108,11 @@ logical_not: "!" logical_statement
             | strict_equality  # equality with === in JS
             | "(" relational ")"
 
-additive: expression "+" expression -> add  # TODO capisci come gestire precedenze e associatività (anche da slides)
+additive: expression "+" expression -> add
            | expression "-" expression -> sub
 
 multiplicative: term "*" term -> mul
                | term "/" term -> div
-
-
 
 negative: "-" expression
          | "-" "(" negative ")"

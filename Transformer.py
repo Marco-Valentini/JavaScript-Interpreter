@@ -167,6 +167,9 @@ class TreeToJS(Transformer):
         """
         return args[0] != args[1]
 
+    def array(self, args):
+        return args
+
     def greater_than(self, args):
         """
         This method is used to check if the first value is greater than the second one. It simulates the JavaScript type coercition
@@ -641,3 +644,8 @@ class TreeToJS(Transformer):
 
     def expression(self, args):
         return args[0]
+
+    def array_access(self, args):
+        # TODO vincolo che l'indice sia int, ma anche IndexOutOfBoundsException
+        arr = symbol_table.find(args[0].value)['value']
+        return arr[args[1]]
