@@ -5,20 +5,20 @@ Lark: https://lark-parser.readthedocs.io/en/stable/# \
 Chosen starting JavaScript grammar: https://tc39.es/ecma262/ \
 Error Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors?retiredLocale=it
 
-# Restriction of the grammar adopted 
-**Data types**
+## Restriction of the grammar adopted 
+### Data types
 - Number
 - Boolean
 - String
 - Array
 
-**Arithmetic Operations (with type coercion simulation)**
+### Arithmetic Operations (with type coercion simulation)
 - addition (+)
 - subtraction (-)
 - multiplication (*)
 - division (/)
 
-**Arithmetic Operations (with type coercion simulation)**
+### Arithmetic Operations (with type coercion simulation)
 - equal (==)
 - not equal (!=)
 - strict equal (===)
@@ -28,7 +28,7 @@ Error Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Referen
 - greater than or equal to (>=)
 - less than or equal to (<=)
 
-**Assignment operations**
+### Assignment operations
 - identifier += expression
 - identifier -= expression
 - identifier *= expression
@@ -38,30 +38,37 @@ Error Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Referen
 - identifier --
 - -- identifier
 
-**Logical operations (with type coercion simulation)**
+### Logical operations (with type coercion simulation)
 - not (!)
 - or (||)
 - and (&&)
 
-**Branching operations**
+### Branching operations
 - if
 - if else
 - operatore condizionale ternario (condition ? true : false)
 
-**Loop operations**
+### Loop operations
 - while
 
-**Input instruction**
-- input da tastiera (prompt)
+### Input instruction
+-  keyboard input (prompt)
 
-**Output instruction:**
-- print nella command window (console.log)
+### Output instruction:
+- print in console (console.log)
+- template literals
 
-**Function declaration**
+### Function declaration
+- function ID (parameters) { body }
 
-**Function call**
+### Function call
+- ID (arguments)
 
-**Handled errors**
+### Array
+- array declaration
+- array access
+
+### Handled errors
 - lexical errors (typing errors)
 - syntax error
     - non-matched parenthesis
