@@ -11,6 +11,7 @@
             | function_declaration
             | function_call ";"?
             | block
+            | ternary_condition_statement
 # TODO valutare se nel loop aggiungere continue e break statement come produzione di statement
 
 ?block: "{" statement* "}"
@@ -49,6 +50,8 @@ input_statement: "prompt" "(" expression ")" ";"? # prompt can take whatever inp
 
 # iteration production
 ?while_statement  : "while" "(" expression ")" statement
+
+?ternary_condition_statement: expression "?" statement ":" statement
 
 ?expression: "(" expression ")"
             | template_literal

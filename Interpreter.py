@@ -33,6 +33,12 @@ class JavaScriptInterpreter(Interpreter):
             condition = js_transformer.transform(tree.children[0])
         return val[-1]
 
+    def ternary_condition_statement(self, tree):
+        condition = js_transformer.transform(tree.children[0])
+        if condition not in ['undefined', 'null', 'NaN', False, 0, ""]:
+            return self.visit(tree.children[1])
+        else:
+            return self.visit(tree.children[2])
 
     def function_declaration(self, tree):
         declaration = tree.children[0]
