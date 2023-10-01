@@ -5,6 +5,7 @@
             | input_statement ";"?
             | variable_statement ";"?
             | expression ";"?
+            | relational
             | if_statement
             | while_statement
             | return_statement ";"?
@@ -12,6 +13,9 @@
             | function_call ";"?
             | block
             | ternary_condition_statement
+            | logical_and
+            | logical_or
+            | logical_not
 # TODO valutare se nel loop aggiungere continue e break statement come produzione di statement
 
 ?block: "{" statement* "}"
@@ -57,14 +61,10 @@ input_statement: "prompt" "(" expression ")" ";"? # prompt can take whatever inp
             | template_literal
             | "null" -> null
             | "undefined" -> undefined
-            | logical_or
-            | logical_and
             | equality  # equality with == in JS
             | strict_equality  # equality with === in JS
-            | relational
             | additive
             | term
-            | logical_not
             | negative
             | array
             | variable_assignment
