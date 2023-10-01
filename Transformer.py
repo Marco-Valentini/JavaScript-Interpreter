@@ -83,25 +83,37 @@ class TreeToJS(Transformer):
         :param args:
         :return:
         """
-        if type(args[0]) == type(args[1]):
+        if type(args[0]) in [float, int] and type(args[1]) in [float, int]:
             return args[0] == args[1]
         else:
-            if type(args[0]) == str and type(args[1]) == float:
-                return float(args[0]) == args[1]
-            elif type(args[0]) == float and type(args[1]) == str:
-                return args[0] == float(args[1])
-            elif type(args[0]) == float and type(args[1]) == bool:
+            if type(args[0]) == str and type(args[1]) in [float, int]:
+                try:
+                    return int(args[0]) == args[1]
+                except ValueError:
+                    try:
+                        return float(args[0]) == args[1]
+                    except ValueError:
+                        return False
+            elif type(args[0]) in [float, int] and type(args[1]) == str:
+                try:
+                    return args[0] == int(args[1])
+                except ValueError:
+                    try:
+                        return args[0] == float(args[1])
+                    except ValueError:
+                        return False
+            elif type(args[0]) in [float, int] and type(args[1]) == bool:
                 if args[1]:
                     return args[0] == 1
                 else:
                     return args[0] == 0
-            elif type(args[0]) == bool and type(args[1]) == float:
+            elif type(args[0]) == bool and type(args[1]) in [float, int]:
                 if args[0]:
                     return 1 == args[1]
                 else:
                     return 0 == args[1]
             else:
-                return False
+                return True
 
     def inequality(self, args):
         """
@@ -109,19 +121,31 @@ class TreeToJS(Transformer):
         :param args:
         :return:
         """
-        if type(args[0]) == type(args[1]):
+        if type(args[0]) in [float, int] and type(args[1]) in [float, int]:
             return args[0] != args[1]
         else:
-            if type(args[0]) == str and type(args[1]) == float:
-                return float(args[0]) != args[1]
-            elif type(args[0]) == float and type(args[1]) == str:
-                return args[0] != float(args[1])
-            elif type(args[0]) == float and type(args[1]) == bool:
+            if type(args[0]) == str and type(args[1]) in [float, int]:
+                try:
+                    return int(args[0]) != args[1]
+                except ValueError:
+                    try:
+                        return float(args[0]) != args[1]
+                    except ValueError:
+                        return False
+            elif type(args[0]) in [float, int] and type(args[1]) == str:
+                try:
+                    return args[0] != int(args[1])
+                except ValueError:
+                    try:
+                        return args[0] != float(args[1])
+                    except ValueError:
+                        return False
+            elif type(args[0]) in [float, int] and type(args[1]) == bool:
                 if args[1]:
                     return args[0] != 1
                 else:
                     return args[0] != 0
-            elif type(args[0]) == bool and type(args[1]) == float:
+            elif type(args[0]) == bool and type(args[1]) in [float, int]:
                 if args[0]:
                     return 1 != args[1]
                 else:
@@ -153,19 +177,31 @@ class TreeToJS(Transformer):
         :param args:
         :return:
         """
-        if type(args[0]) == type(args[1]):
+        if type(args[0]) in [float, int] and type(args[1]) in [float, int]:
             return args[0] > args[1]
         else:
-            if type(args[0]) == str and type(args[1]) == float:
-                return float(args[0]) > args[1]
-            elif type(args[0]) == float and type(args[1]) == str:
-                return args[0] > float(args[1])
-            elif type(args[0]) == float and type(args[1]) == bool:
+            if type(args[0]) == str and type(args[1]) in [float, int]:
+                try:
+                    return int(args[0]) > args[1]
+                except ValueError:
+                    try:
+                        return float(args[0]) > args[1]
+                    except ValueError:
+                        return False
+            elif type(args[0]) in [float, int] and type(args[1]) == str:
+                try:
+                    return args[0] > int(args[1])
+                except ValueError:
+                    try:
+                        return args[0] > float(args[1])
+                    except ValueError:
+                        return False
+            elif type(args[0]) in [float, int] and type(args[1]) == bool:
                 if args[1]:
                     return args[0] > 1
                 else:
                     return args[0] > 0
-            elif type(args[0]) == bool and type(args[1]) == float:
+            elif type(args[0]) == bool and type(args[1]) in [float, int]:
                 if args[0]:
                     return 1 > args[1]
                 else:
@@ -179,19 +215,31 @@ class TreeToJS(Transformer):
         :param args:
         :return:
         """
-        if type(args[0]) == type(args[1]):
+        if type(args[0]) in [float, int] and type(args[1]) in [float, int]:
             return args[0] >= args[1]
         else:
-            if type(args[0]) == str and type(args[1]) == float:
-                return float(args[0]) >= args[1]
-            elif type(args[0]) == float and type(args[1]) == str:
-                return args[0] >= float(args[1])
-            elif type(args[0]) == float and type(args[1]) == bool:
+            if type(args[0]) == str and type(args[1]) in [float, int]:
+                try:
+                    return int(args[0]) >= args[1]
+                except ValueError:
+                    try:
+                        return float(args[0]) >= args[1]
+                    except ValueError:
+                        return False
+            elif type(args[0]) in [float, int] and type(args[1]) == str:
+                try:
+                    return args[0] >= int(args[1])
+                except ValueError:
+                    try:
+                        return args[0] >= float(args[1])
+                    except ValueError:
+                        return False
+            elif type(args[0]) in [float, int] and type(args[1]) == bool:
                 if args[1]:
                     return args[0] >= 1
                 else:
                     return args[0] >= 0
-            elif type(args[0]) == bool and type(args[1]) == float:
+            elif type(args[0]) == bool and type(args[1]) in [float, int]:
                 if args[0]:
                     return 1 >= args[1]
                 else:
@@ -205,19 +253,31 @@ class TreeToJS(Transformer):
         :param args:
         :return:
         """
-        if type(args[0]) == type(args[1]):
+        if type(args[0]) in [float, int] and type(args[1]) in [float, int]:
             return args[0] < args[1]
         else:
-            if type(args[0]) == str and type(args[1]) == float:
-                return float(args[0]) < args[1]
-            elif type(args[0]) == float and type(args[1]) == str:
-                return args[0] < float(args[1])
-            elif type(args[0]) == float and type(args[1]) == bool:
+            if type(args[0]) == str and type(args[1]) in [float, int]:
+                try:
+                    return int(args[0]) < args[1]
+                except ValueError:
+                    try:
+                        return float(args[0]) < args[1]
+                    except ValueError:
+                        return False
+            elif type(args[0]) in [float, int] and type(args[1]) == str:
+                try:
+                    return args[0] < int(args[1])
+                except ValueError:
+                    try:
+                        return args[0] < float(args[1])
+                    except ValueError:
+                        return False
+            elif type(args[0]) in [float, int] and type(args[1]) == bool:
                 if args[1]:
                     return args[0] < 1
                 else:
                     return args[0] < 0
-            elif type(args[0]) == bool and type(args[1]) == float:
+            elif type(args[0]) == bool and type(args[1]) in [float, int]:
                 if args[0]:
                     return 1 < args[1]
                 else:
@@ -231,19 +291,31 @@ class TreeToJS(Transformer):
         :param args:
         :return:
         """
-        if type(args[0]) == type(args[1]):
+        if type(args[0]) in [float, int] and type(args[1]) in [float, int]:
             return args[0] <= args[1]
         else:
-            if type(args[0]) == str and type(args[1]) == float:
-                return float(args[0]) <= args[1]
-            elif type(args[0]) == float and type(args[1]) == str:
-                return args[0] <= float(args[1])
-            elif type(args[0]) == float and type(args[1]) == bool:
+            if type(args[0]) == str and type(args[1]) in [float, int]:
+                try:
+                    return int(args[0]) <= args[1]
+                except ValueError:
+                    try:
+                        return float(args[0]) <= args[1]
+                    except ValueError:
+                        return False
+            elif type(args[0]) in [float, int] and type(args[1]) == str:
+                try:
+                    return args[0] <= int(args[1])
+                except ValueError:
+                    try:
+                        return args[0] <= float(args[1])
+                    except ValueError:
+                        return False
+            elif type(args[0]) in [float, int] and type(args[1]) == bool:
                 if args[1]:
                     return args[0] <= 1
                 else:
                     return args[0] <= 0
-            elif type(args[0]) == bool and type(args[1]) == float:
+            elif type(args[0]) == bool and type(args[1]) in [float, int]:
                 if args[0]:
                     return 1 <= args[1]
                 else:
@@ -257,14 +329,12 @@ class TreeToJS(Transformer):
         :param args:
         :return:
         """
-        if (type(args[0]) == type(args[1])) or \
-                (type(args[0]) == float and type(args[1]) == bool) or \
-                (type(args[0]) == bool and type(args[1]) == float):
+        if type(args[0]) in [float, int, bool] and type(args[1]) in [float, int, bool]:
             return args[0] + args[1]
         else:
-            if type(args[0]) == str and type(args[1]) == float:
+            if type(args[0]) == str and type(args[1]) in [float, int]:
                 return args[0] + str(args[1])
-            elif type(args[0]) == float and type(args[1]) == str:
+            elif type(args[0]) in [float, int] and type(args[1]) == str:
                 return str(args[0]) + args[1]
             elif type(args[0]) == str and type(args[1]) == bool:
                 if args[1]:
@@ -285,53 +355,69 @@ class TreeToJS(Transformer):
         :param args:
         :return:
         """
-        if (type(args[0]) == type(args[1])) or \
-                (type(args[0]) == float and type(args[1]) == bool) or \
-                (type(args[0]) == bool and type(args[1]) == float):
+        if type(args[0]) in [float, int, bool] and type(args[1]) in [float, int, bool]:
             return args[0] - args[1]
         else:
-            if type(args[0]) == str and type(args[1]) == float:
-                if args[0].isnumeric():
-                    return float(args[0]) - args[1]
-                else:
-                    return 'NaN'
-            elif type(args[0]) == float and type(args[1]) == str:
-                if args[1].isnumeric():
-                    return args[0] - float(args[1])
-                else:
-                    return 'NaN'
-            elif type(args[0]) == float and type(args[1]) == bool:
+            if type(args[0]) == str and type(args[1]) in [float, int]:
+                try:
+                    return int(args[0]) - args[1]
+                except ValueError:
+                    try:
+                        return float(args[0]) - args[1]
+                    except ValueError:
+                        return 'NaN'
+            elif type(args[0]) in [float, int] and type(args[1]) == str:
+                try:
+                    return args[0] - int(args[1])
+                except ValueError:
+                    try:
+                        return args[0] - float(args[1])
+                    except ValueError:
+                        return 'NaN'
+            elif type(args[0]) in [float, int] and type(args[1]) == bool:
                 if args[1]:
                     return args[0] - 1
                 else:
                     return args[0] - 0
-            elif type(args[0]) == bool and type(args[1]) == float:
+            elif type(args[0]) == bool and type(args[1]) in [float, int]:
                 if args[0]:
                     return 1 - args[1]
                 else:
                     return 0 - args[1]
             elif type(args[0]) == bool and type(args[1]) == str:
                 if args[0]:
-                    if args[1].isnumeric():
-                        return 1 - float(args[1])
-                    else:
-                        return 'NaN'
+                    try:
+                        return 1 - int(args[1])
+                    except ValueError:
+                        try:
+                            return 1 - float(args[1])
+                        except ValueError:
+                            return 'NaN'
                 else:
-                    if args[1].isnumeric():
-                        return 0 - float(args[1])
-                    else:
-                        return 'NaN'
+                    try:
+                        return 0 - int(args[1])
+                    except ValueError:
+                        try:
+                            return 0 - float(args[1])
+                        except ValueError:
+                            return 'NaN'
             elif type(args[0]) == str and type(args[1]) == bool:
                 if args[1]:
-                    if args[0].isnumeric():
-                        return float(args[0]) - 1
-                    else:
-                        return 'NaN'
+                    try:
+                        return int(args[0]) - 1
+                    except ValueError:
+                        try:
+                            return float(args[0]) - 1
+                        except ValueError:
+                            return 'NaN'
                 else:
-                    if args[0].isnumeric():
-                        return float(args[0]) - 0
-                    else:
-                        return 'NaN'
+                    try:
+                        return int(args[0]) - 0
+                    except ValueError:
+                        try:
+                            return float(args[0]) - 0
+                        except ValueError:
+                            return 'NaN'
             else:
                 return 'NaN'
 
@@ -344,48 +430,66 @@ class TreeToJS(Transformer):
         if type(args[0]) == type(args[1]):
             return args[0] * args[1]
         else:
-            if type(args[0]) == str and type(args[1]) == float:
-                if args[0].isnumeric():
-                    return float(args[0]) * args[1]
-                else:
-                    return 'NaN'
-            elif type(args[0]) == float and type(args[1]) == str:
-                if args[1].isnumeric():
-                    return args[0] * float(args[1])
-                else:
-                    return 'NaN'
-            elif type(args[0]) == float and type(args[1]) == bool:
+            if type(args[0]) == str and type(args[1]) in [float, int]:
+                try:
+                    return int(args[0]) * args[1]
+                except ValueError:
+                    try:
+                        return float(args[0]) * args[1]
+                    except ValueError:
+                        return 'NaN'
+            elif type(args[0]) in [float, int] and type(args[1]) == str:
+                try:
+                    return args[0] * int(args[1])
+                except ValueError:
+                    try:
+                        return args[0] * float(args[1])
+                    except ValueError:
+                        return 'NaN'
+            elif type(args[0]) in [float, int] and type(args[1]) == bool:
                 if args[1]:
                     return args[0] * 1
                 else:
                     return args[0] * 0
-            elif type(args[0]) == bool and type(args[1]) == float:
+            elif type(args[0]) == bool and type(args[1]) in [float, int]:
                 if args[0]:
                     return 1 * args[1]
                 else:
                     return 0 * args[1]
             elif type(args[0]) == bool and type(args[1]) == str:
                 if args[0]:
-                    if args[1].isnumeric():
-                        return 1 * float(args[1])
-                    else:
-                        return 'NaN'
+                    try:
+                        return 1 * int(args[1])
+                    except ValueError:
+                        try:
+                            return 1 * float(args[1])
+                        except ValueError:
+                            return 'NaN'
                 else:
-                    if args[1].isnumeric():
-                        return 0 * float(args[1])
-                    else:
-                        return 'NaN'
+                    try:
+                        return 0 * int(args[1])
+                    except ValueError:
+                        try:
+                            return 0 * float(args[1])
+                        except ValueError:
+                            return 'NaN'
             elif type(args[0]) == str and type(args[1]) == bool:
                 if args[1]:
-                    if args[0].isnumeric():
-                        return float(args[0]) * 1
-                    else:
-                        return 'NaN'
+                    try:
+                        return int(args[0]) * 1
+                    except ValueError:
+                        try:
+                            return float(args[0]) * 1
+                        except ValueError:
+                            return 'NaN'
                 else:
-                    if args[0].isnumeric():
-                        return float(args[0]) * 0
-                    else:
-                        return 'NaN'
+                    try:
+                        return int(args[0]) * 0
+                    except ValueError:
+                        try:
+                            return float(args[0]) * 0
+                        except ValueError:
+                            return 'NaN'
             else:
                 return 'NaN'
 
@@ -398,48 +502,66 @@ class TreeToJS(Transformer):
         if type(args[0]) == type(args[1]):
             return args[0] / args[1]
         else:
-            if type(args[0]) == str and type(args[1]) == float:
-                if args[0].isnumeric():
-                    return float(args[0]) / args[1]
-                else:
-                    return 'NaN'
-            elif type(args[0]) == float and type(args[1]) == str:
-                if args[1].isnumeric():
-                    return args[0] / float(args[1])
-                else:
-                    return 'NaN'
-            elif type(args[0]) == float and type(args[1]) == bool:
+            if type(args[0]) == str and type(args[1]) in [float, int]:
+                try:
+                    return int(args[0]) / args[1]
+                except ValueError:
+                    try:
+                        return float(args[0]) / args[1]
+                    except ValueError:
+                        return 'NaN'
+            elif type(args[0]) in [float, int] and type(args[1]) == str:
+                try:
+                    return args[0] / int(args[1])
+                except ValueError:
+                    try:
+                        return args[0] / float(args[1])
+                    except ValueError:
+                        return 'NaN'
+            elif type(args[0]) in [float, int] and type(args[1]) == bool:
                 if args[1]:
                     return args[0] / 1
                 else:
                     return args[0] / 0
-            elif type(args[0]) == bool and type(args[1]) == float:
+            elif type(args[0]) == bool and type(args[1]) in [float, int]:
                 if args[0]:
                     return 1 / args[1]
                 else:
                     return 0 / args[1]
             elif type(args[0]) == bool and type(args[1]) == str:
                 if args[0]:
-                    if args[1].isnumeric():
-                        return 1 / float(args[1])
-                    else:
-                        return 'NaN'
+                    try:
+                        return 1 / int(args[1])
+                    except ValueError:
+                        try:
+                            return 1 / float(args[1])
+                        except ValueError:
+                            return 'NaN'
                 else:
-                    if args[1].isnumeric():
-                        return 0 / float(args[1])
-                    else:
-                        return 'NaN'
+                    try:
+                        return 0 / int(args[1])
+                    except ValueError:
+                        try:
+                            return 0 / float(args[1])
+                        except ValueError:
+                            return 'NaN'
             elif type(args[0]) == str and type(args[1]) == bool:
                 if args[1]:
-                    if args[0].isnumeric():
-                        return float(args[0]) / 1
-                    else:
-                        return 'NaN'
+                    try:
+                        return int(args[0]) / 1
+                    except ValueError:
+                        try:
+                            return float(args[0]) / 1
+                        except ValueError:
+                            return 'NaN'
                 else:
-                    if args[0].isnumeric():
-                        return float(args[0]) / 0
-                    else:
-                        return 'NaN'
+                    try:
+                        return int(args[0]) / 0
+                    except ValueError:
+                        try:
+                            return float(args[0]) / 0
+                        except ValueError:
+                            return 'NaN'
             else:
                 return 'NaN'
 
@@ -449,7 +571,7 @@ class TreeToJS(Transformer):
         :param args:
         :return:
         """
-        if type(args[0]) == float:
+        if type(args[0]) in [float, int]:
             return -args[0]
         elif type(args[0]) == bool:
             if args[0]:
@@ -457,10 +579,13 @@ class TreeToJS(Transformer):
             else:
                 return -0
         elif type(args[0]) == str:
-            if args[0].isnumeric():
-                return -float(args[0])
-            else:
-                return 'NaN'
+            try:
+                return - int(args[0])
+            except ValueError:
+                try:
+                    return - float(args[0])
+                except ValueError:
+                    return 'NaN'
         else:
             return 'NaN'
 
@@ -487,7 +612,7 @@ class TreeToJS(Transformer):
 
     def template_literal(self, args):
         temp = ""
-        for arg in args: #TODO rendi più efficiente modificando la grammatica
+        for arg in args:  #TODO rendi più efficiente modificando la grammatica
             if type(arg) in [float, int, bool]:
                 temp += str(arg) + " "
             else:
@@ -500,8 +625,10 @@ class TreeToJS(Transformer):
         :param args:
         :return:
         """
-        if args[0].type == 'NUMBER':
+        if args[0].type == 'FLOAT':
             return float(args[0].value)
+        elif args[0].type == 'INT':
+            return int(args[0].value)
         elif args[0].type == 'STRING':
             return str(args[0].value[1:-1])
         elif args[0].type == 'BOOL':

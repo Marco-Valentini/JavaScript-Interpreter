@@ -75,7 +75,8 @@ term : multiplicative
      | "(" term ")"
 
 factor : STRING
-       | NUMBER
+       | INT
+       | FLOAT
        | BOOL
        | IDENTIFIER
        | IDENTIFIER "[" expression "]" -> vector_access
@@ -128,7 +129,8 @@ COMMENT: "//" /[^\n]/* | "/*" /./* "*/"
 %import common.ESCAPED_STRING
 %import common._STRING_INNER
 %import common.CNAME -> IDENTIFIER
-%import common.NUMBER  # TODO vedi se serve mettere unsigned
+%import common.INT
+%import common.FLOAT
 %import common.WS
 
 %ignore COMMENT
