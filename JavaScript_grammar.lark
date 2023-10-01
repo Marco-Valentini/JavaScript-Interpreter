@@ -2,16 +2,14 @@
 ?start: statement+ // a program is composed of one or more statement
 
 ?statement: print_statement ";"?
-            | input_statement ";"?
             | variable_statement ";"?
+            | variable_assignment ";"?
             | logical_statement ";"?
-            | expression ";"?
             | if_statement
             | while_statement
             | return_statement ";"?
             | function_declaration
             | function_call ";"?
-            | block
             | ternary_condition_statement
 
 ?logical_statement : "(" logical_statement ")"
@@ -19,6 +17,29 @@
                   | logical_or
                   | logical_not
                   | relational  # <, >, <=, >=
+
+?relational: expression "<" expression -> less_than
+            | expression ">" expression -> greater_than
+            | expression "<=" expression -> less_than_or_equal
+            | expression ">=" expression -> greater_than_or_equal
+            | equality  # equality with == in JS
+            | strict_equality  # equality with === in JS
+            | "(" relational ")"
+
+?logical_or: (expression |  "||" expression
+           | "(" logical_or ")"
+
+?logical_and: logical_statement "&&" logical_statement
+            | "(" logical_and ")"
+
+logical_not: "!" logical_statement
+            | "!" "(" logical_not ")"
+
+?equality: expression "==" expression
+            | expression "!=" expression -> inequality
+
+?strict_equality: expression "===" expression
+                    | expression "!==" expression -> strict_inequality
 
 ?block: "{" statement* "}"
 
@@ -41,34 +62,11 @@ input_statement: "prompt" "(" expression ")" ";"? # prompt can take whatever inp
                     | "++" IDENTIFIER
                     | "--" IDENTIFIER
 
-!function_declaration : "function" IDENTIFIER "(" parameter_list? ")" block
-
-?parameter_list: IDENTIFIER ("," IDENTIFIER)*
-
-!function_call: IDENTIFIER "(" argument_list? ")"
-
-?argument_list: (IDENTIFIER "=")? expression ("," (IDENTIFIER "=")? expression)*
-
-!return_statement: "return" expression? ";"?
-
-# branching production
-?if_statement : "if" "(" (logical_statement | expression) ")" statement ("else" statement)?  # this way we include all the possible cases, statement cn be a block or another if statement
-
-# iteration production
-?while_statement  : "while" "(" (logical_statement | expression) ")" statement
-
-# ternary condition statement
-?ternary_condition_statement: (logical_statement | expression) "?" statement ":" statement
-
 ?expression: "(" expression ")"
-            | template_literal
-            | "null" -> null
-            | "undefined" -> undefined
             | additive
             | term
             | negative
-            | array
-            | variable_assignment
+
 
 term : multiplicative
      | factor
@@ -76,37 +74,20 @@ term : multiplicative
      | "(" term ")"
 
 factor : STRING
+       | template_literal  # because it is just a more complex string
        | INT
        | FLOAT
        | BOOL
        | IDENTIFIER
        | IDENTIFIER "[" expression "]" -> array_access
+       | "null" -> null
+       | "undefined" -> undefined
+       | input_statement  #TODO controlls
 
 
 ?array  : "[" [expression ("," expression)*] "]"
 
-?logical_or: logical_statement "||" logical_statement
-           | "(" logical_or ")"
 
-?logical_and: logical_statement "&&" logical_statement
-            | "(" logical_and ")"
-
-logical_not: "!" logical_statement
-            | "!" "(" logical_not ")"
-
-?equality: expression "==" expression
-            | expression "!=" expression -> inequality
-
-?strict_equality: expression "===" expression
-                    | expression "!==" expression -> strict_inequality
-
-?relational: expression "<" expression -> less_than
-            | expression ">" expression -> greater_than
-            | expression "<=" expression -> less_than_or_equal
-            | expression ">=" expression -> greater_than_or_equal
-            | equality  # equality with == in JS
-            | strict_equality  # equality with === in JS
-            | "(" relational ")"
 
 additive: expression "+" expression -> add
            | expression "-" expression -> sub
@@ -120,6 +101,25 @@ negative: "-" expression
 ?template_literal: "`" (template_string_part | "${" expression "}")* "`"
 
 ?template_string_part: /[^$`]+/
+
+!function_declaration : "function" IDENTIFIER "(" parameter_list? ")" block
+
+?parameter_list: IDENTIFIER ("," IDENTIFIER)*
+
+!function_call: IDENTIFIER "(" argument_list? ")"
+
+?argument_list: (IDENTIFIER "=")? expression ("," (IDENTIFIER "=")? expression)*
+
+!return_statement: "return" expression? ";"?
+
+# branching production
+?if_statement : "if" "(" (logical_statement | expression) ")" block ("else" block)?  # this way we include all the possible cases, statement cn be a block or another if statement
+
+# iteration production
+?while_statement  : "while" "(" (logical_statement | expression) ")" block
+
+# ternary condition statement
+?ternary_condition_statement: (logical_statement | expression) "?" statement ":" statement
 
 BOOL .1: "true" | "false"
 
