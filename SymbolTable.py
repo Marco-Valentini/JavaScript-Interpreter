@@ -5,7 +5,7 @@ class SymbolTable:
 
     def insert(self, identifier, attributes):
         """
-
+        Inserts a new identifier in the symbol table
         :param identifier: JavaScript variable binding
         :param attributes: can be another dictionary, containing the variable attributes
         :return:
@@ -30,9 +30,20 @@ class SymbolTable:
         return self.table[identifier]
 
     def delete(self, identifier):
+        """
+        Deletes the required identifier from the symbol table
+        :param identifier:
+        :return:
+        """
         del self.table[identifier]
 
     def update(self, identifier, attributes):
+        """
+        Updates the attributes of the required identifier
+        :param identifier:
+        :param attributes:
+        :return:
+        """
         if attributes['type']:
             if attributes['type'] == float:
                 attributes['type'] = 'Number'

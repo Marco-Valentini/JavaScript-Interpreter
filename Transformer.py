@@ -5,15 +5,11 @@
 
 # A transformer without methods essentially performs a non-memorized partial deepcopy
 
-
 from lark.visitors import Transformer
 from SymbolTable import symbol_table
 
-# TODO capire se mettere v_args inline=True o no
 # con v_args si possono specificare una serie di parametri: inline (i children dell'albero sono passati come *args e non come una lista)
 #  meta (if meta=True) dà una serie di info come riga e colonna a cui ci troviamo
-# TODO l'interpreter sembra una sorta di estensione del transformer, dove ad esempio si aggiunge la gestione dell'if o del while
-
 
 
 class TreeToJS(Transformer):

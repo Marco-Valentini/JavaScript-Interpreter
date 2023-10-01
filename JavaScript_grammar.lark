@@ -54,12 +54,13 @@ input_statement: "prompt" "(" expression ")" ";"? # prompt can take whatever inp
 !return_statement: "return" expression? ";"?
 
 # branching production
-?if_statement : "if" "(" expression ")" statement ("else" statement)?  # this way we include all the possible cases, statement cn be a block or another if statement
+?if_statement : "if" "(" (logical_statement | expression) ")" statement ("else" statement)?  # this way we include all the possible cases, statement cn be a block or another if statement
 
 # iteration production
-?while_statement  : "while" "(" expression ")" statement
+?while_statement  : "while" "(" (logical_statement | expression) ")" statement
 
-?ternary_condition_statement: expression "?" statement ":" statement
+# ternary condition statement
+?ternary_condition_statement: (logical_statement | expression) "?" statement ":" statement
 
 ?expression: "(" expression ")"
             | template_literal

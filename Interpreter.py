@@ -21,24 +21,44 @@ class JavaScriptInterpreter(Interpreter):
 
     def if_statement(self, tree):
         condition = js_transformer.transform(tree.children[0])
-        if condition not in ['undefined', 'null', 'NaN', False, 0, ""]:
-            return self.visit(tree.children[1])
-        elif len(tree.children) == 3:
-            return self.visit(tree.children[2])
+        if condition not in ['undefined', 'null', 'NaN', False, 0, ""]:  # JavaScript falsy values
+            true_branch = self.visit(tree.children[1])  # visit the true branch
+            if true_branch == []:
+                return 'undefined'
+            else:
+                return true_branch
+        elif len(tree.children) == 3:  # if there is else branch
+            false_branch = self.visit(tree.children[2])  # visit the false branch
+            if false_branch == []:
+                return 'undefined'
+            else:
+                return false_branch
 
     def while_statement(self, tree):
         condition = js_transformer.transform(tree.children[0])
         while condition not in ['undefined', 'null', 'NaN', False, 0, ""]:
             val = self.visit(tree.children[1])
             condition = js_transformer.transform(tree.children[0])
-        return val[-1]
+        if type(val) == list:
+            return val[-1]
+        else:
+            return val
 
     def ternary_condition_statement(self, tree):
         condition = js_transformer.transform(tree.children[0])
         if condition not in ['undefined', 'null', 'NaN', False, 0, ""]:
-            return self.visit(tree.children[1])
+            true_branch = self.visit(tree.children[1])
+            if type(true_branch) == list:
+                raise Exception('SyntaxError: Unexpected token')
+            else:
+                return true_branch
         else:
-            return self.visit(tree.children[2])
+            false_branch = self.visit(tree.children[2])
+            if type(false_branch) == list:
+                raise Exception('SyntaxError: Unexpected token')
+            else:
+                return false_branch
+
 
     def function_declaration(self, tree):
         declaration = tree.children[0]
