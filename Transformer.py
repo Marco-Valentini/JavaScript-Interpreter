@@ -18,10 +18,16 @@ class TreeToJS(Transformer):
     Lark returns. Each method of the class corresponds to one of the rules in the grammar.
     """
     def print_statement(self, args):
-        print(args[0])
+        if not args:
+            return 'undefined'
+        else:
+            return args[0]
 
     def input_statement(self, args):
-        return input(args[0])
+        if not args:
+            return input()
+        else:
+            return input(args[0])
 
     def variable_statement(self, args):
         if len(args) == 2:  # variable declaration (es. let a)
@@ -624,7 +630,9 @@ class TreeToJS(Transformer):
         :param args:
         :return:
         """
-        if args[0].type == 'FLOAT':
+        if type(args[0]) == str:  # case of template literal
+            return args[0]
+        elif args[0].type == 'FLOAT':
             return float(args[0].value)
         elif args[0].type == 'INT':
             return int(args[0].value)

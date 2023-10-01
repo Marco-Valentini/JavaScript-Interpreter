@@ -1,5 +1,5 @@
 # Grammar is composed of definitions (named literals and named terminals) and some directives (at the end)
-?start: statement+ // a program is composed of one or more statement
+?start: (statement|expression)+ // a program is composed of one or more statement
 
 ?statement: print_statement ";"?
             | variable_statement ";"?
@@ -26,7 +26,7 @@
             | strict_equality  # equality with === in JS
             | "(" relational ")"
 
-?logical_or: (expression |  "||" expression
+?logical_or: logical_statement "||" logical_statement
            | "(" logical_or ")"
 
 ?logical_and: logical_statement "&&" logical_statement
@@ -43,15 +43,21 @@ logical_not: "!" logical_statement
 
 ?block: "{" statement* "}"
 
-?print_statement: "console" "." "log" "(" expression ")" ";"?
+?print_statement: "console" "." "log" "(" expression? ")" ";"?
+                | "console" "." "log" "(" variable_assignment ")" ";"?
+                | "console" "." "log" "(" logical_statement ")" ";"?
+                | "console" "." "log" "(" function_call ")" ";"?
+                | "console" "." "log" "(" ternary_condition_statement ")" ";"?
 
-input_statement: "prompt" "(" expression ")" ";"? # prompt can take whatever input you give to it
+input_statement: "prompt" "(" expression? ")" ";"?  # prompt can take whatever input you give to it
+                | "prompt" "(" variable_assignment ")" ";"?
+                | "prompt" "(" logical_statement ")" ";"?
+                | "prompt" "(" function_call ")" ";"?
+                | "prompt" "(" ternary_condition_statement ")" ";"?
 
 # the ! is required to not filter keywords like let/const/var
 !variable_statement: ("let"|"var"|"const") IDENTIFIER ("=" expression)?
                     |("let"|"var"|"const")? IDENTIFIER ("=" expression)  # we can define but not assign a variable or vice versa
-                    |("let"|"var"|"const") IDENTIFIER ("=" input_statement)?
-                    |("let"|"var"|"const")? IDENTIFIER ("=" input_statement)
 
 !variable_assignment: IDENTIFIER "+=" expression
                     | IDENTIFIER "-=" expression
@@ -80,14 +86,9 @@ factor : STRING
        | BOOL
        | IDENTIFIER
        | IDENTIFIER "[" expression "]" -> array_access
-       | "null" -> null
-       | "undefined" -> undefined
-       | input_statement  #TODO controlls
-
+       | input_statement
 
 ?array  : "[" [expression ("," expression)*] "]"
-
-
 
 additive: expression "+" expression -> add
            | expression "-" expression -> sub
@@ -139,4 +140,3 @@ COMMENT: "//" /[^\n]/* | "/*" /./* "*/"
 
 %ignore COMMENT
 %ignore WS
-

@@ -2,7 +2,7 @@ from lark import Lark
 from Interpreter import JavaScriptInterpreter
 
 # the grammar is contained in the file JavaScript_grammar.lark
-parser = Lark.open("JavaScript_grammar.lark", parser='lalr', debug=True)  # TODO capire quale lexer utilizzare
+parser = Lark.open("JavaScript_grammar.lark", parser='lalr', debug=True)
 
 def main():
     while True:
