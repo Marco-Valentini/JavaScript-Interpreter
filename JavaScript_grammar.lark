@@ -4,8 +4,8 @@
 ?statement: print_statement ";"?
             | input_statement ";"?
             | variable_statement ";"?
+            | logical_statement ";"?
             | expression ";"?
-            | relational
             | if_statement
             | while_statement
             | return_statement ";"?
@@ -13,9 +13,13 @@
             | function_call ";"?
             | block
             | ternary_condition_statement
-            | logical_and
-            | logical_or
-            | logical_not
+
+?logical_statement : "(" logical_statement ")"
+                  | logical_and
+                  | logical_or
+                  | logical_not
+                  | relational  # <, >, <=, >=
+
 # TODO valutare se nel loop aggiungere continue e break statement come produzione di statement
 
 ?block: "{" statement* "}"
@@ -61,8 +65,6 @@ input_statement: "prompt" "(" expression ")" ";"? # prompt can take whatever inp
             | template_literal
             | "null" -> null
             | "undefined" -> undefined
-            | equality  # equality with == in JS
-            | strict_equality  # equality with === in JS
             | additive
             | term
             | negative
@@ -83,11 +85,14 @@ factor : STRING
 
 ?array  : "[" [expression ("," expression)*] "]"  # TODO come valutare espressioni in place
 
-?logical_or: expression "||" expression
+?logical_or: logical_statement "||" logical_statement
            | "(" logical_or ")"
 
-?logical_and: expression "&&" expression
+?logical_and: logical_statement "&&" logical_statement
             | "(" logical_and ")"
+
+logical_not: "!" logical_statement
+            | "!" "(" logical_not ")"
 
 ?equality: expression "==" expression  # TODO verifica se serve rinominare per far funzionare
             | expression "!=" expression -> inequality
@@ -99,6 +104,8 @@ factor : STRING
             | expression ">" expression -> greater_than
             | expression "<=" expression -> less_than_or_equal
             | expression ">=" expression -> greater_than_or_equal
+            | equality  # equality with == in JS
+            | strict_equality  # equality with === in JS
             | "(" relational ")"
 
 additive: expression "+" expression -> add  # TODO capisci come gestire precedenze e associatività (anche da slides)
@@ -107,8 +114,7 @@ additive: expression "+" expression -> add  # TODO capisci come gestire preceden
 multiplicative: term "*" term -> mul
                | term "/" term -> div
 
-logical_not: "!" expression
-            | "!" "(" logical_not ")"
+
 
 negative: "-" expression
          | "-" "(" negative ")"
