@@ -56,9 +56,9 @@ input_statement: "prompt" "(" expression? ")" ";"?  # prompt can take whatever i
                 | "prompt" "(" ternary_condition_statement ")" ";"?
 
 # the ! is required to not filter keywords like let/const/var
-!variable_statement: ("let"|"var"|"const") IDENTIFIER ("=" expression)?
-                    |("let"|"var"|"const")? IDENTIFIER ("=" expression)  # we can define but not assign a variable or vice versa
-
+!variable_statement: ("let"|"var") IDENTIFIER ("=" expression)?
+                    |("let"|"var")? IDENTIFIER ("=" expression)  # we can define but not assign a variable or vice versa
+                    |"const" IDENTIFIER "=" expression
 
 !variable_assignment: IDENTIFIER "+=" expression
                     | IDENTIFIER "-=" expression

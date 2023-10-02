@@ -79,25 +79,10 @@ class JavaScriptInterpreter(Interpreter):
         identifier = tree.children[0]
         # take the argument list and check if the number of arguments is the same as the number of parameters
         if len(tree.children) == 3:
-            # check if the number of arguments is the same as the number of parameters
-            if len(symbol_table.find(identifier)['parameter_list']) != 0:
-                raise Exception('TypeError: ' + identifier + ' takes ' + str(
-                    len(symbol_table.find(identifier)['parameter_list'])) +
-                                ' arguments but 0 were given')
             argument_list = []  # if there are no arguments
         elif len(tree.children[2].children) > 1:  # if there are more than one argument
-            # check if the number of arguments is the same as the number of parameters
-            if len(tree.children[2].children) != len(symbol_table.find(identifier)['parameter_list']):
-                raise Exception('TypeError: ' + identifier + ' takes ' + str(
-                    len(symbol_table.find(identifier)['parameter_list'])) +
-                                ' arguments but ' + str(len(tree.children[2].children)) + ' were given')
             argument_list = js_transformer.transform(tree.children[2]).children
         else:  # if there is only one argument
-            # check if the number of arguments is the same as the number of parameters
-            if len(symbol_table.find(identifier)['parameter_list']) != 1:
-                raise Exception('TypeError: ' + identifier + ' takes ' + str(
-                    len(symbol_table.find(identifier)['parameter_list'])) +
-                                ' arguments but ' + str(len(tree.children[2].children)) + ' were given')
             argument_list = [js_transformer.transform(tree.children[2])]
 
         function = symbol_table.find(identifier)
