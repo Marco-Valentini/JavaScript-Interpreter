@@ -58,6 +58,7 @@ input_statement: "prompt" "(" expression? ")" ";"?  # prompt can take whatever i
 # the ! is required to not filter keywords like let/const/var
 !variable_statement: ("let"|"var"|"const") IDENTIFIER ("=" expression)?
                     |("let"|"var"|"const")? IDENTIFIER ("=" expression)  # we can define but not assign a variable or vice versa
+                    | ("let"|"var"|"const") IDENTIFIER "=" array  # we can assign an array to a variable
 
 !variable_assignment: IDENTIFIER "+=" expression
                     | IDENTIFIER "-=" expression
@@ -72,7 +73,6 @@ input_statement: "prompt" "(" expression? ")" ";"?  # prompt can take whatever i
             | additive
             | term
             | negative
-
 
 term : multiplicative
      | factor

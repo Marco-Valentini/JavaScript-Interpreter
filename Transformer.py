@@ -334,7 +334,7 @@ class TreeToJS(Transformer):
         :param args:
         :return:
         """
-        if type(args[0]) in [float, int, bool] and type(args[1]) in [float, int, bool]:
+        if type(args[0]) in [float, int, bool] and type(args[1]) in [float, int, bool] or type(args[0]) == type(args[1]):
             return args[0] + args[1]
         else:
             if type(args[0]) == str and type(args[1]) in [float, int]:
@@ -423,6 +423,20 @@ class TreeToJS(Transformer):
                             return float(args[0]) - 0
                         except ValueError:
                             return 'NaN'
+            elif type(args[0]) == str and type(args[1]) == str:
+                try:
+                    return int(args[0]) - int(args[1])
+                except ValueError:
+                    try:
+                        return float(args[0]) - float(args[1])
+                    except ValueError:
+                        try:
+                            return int(args[0]) - float(args[1])
+                        except ValueError:
+                            try:
+                                return float(args[0]) - int(args[1])
+                            except ValueError:
+                                return 'NaN'
             else:
                 return 'NaN'
 
@@ -432,7 +446,7 @@ class TreeToJS(Transformer):
         :param args:
         :return:
         """
-        if type(args[0]) == type(args[1]):
+        if type(args[0]) in [float, int, bool] and type(args[1]) in [float, int, bool]:
             return args[0] * args[1]
         else:
             if type(args[0]) == str and type(args[1]) in [float, int]:
@@ -495,6 +509,20 @@ class TreeToJS(Transformer):
                             return float(args[0]) * 0
                         except ValueError:
                             return 'NaN'
+            elif type(args[0]) == str and type(args[1]) == str:
+                try:
+                    return int(args[0]) * int(args[1])
+                except ValueError:
+                    try:
+                        return float(args[0]) * float(args[1])
+                    except ValueError:
+                        try:
+                            return int(args[0]) * float(args[1])
+                        except ValueError:
+                            try:
+                                return float(args[0]) * int(args[1])
+                            except ValueError:
+                                return 'NaN'
             else:
                 return 'NaN'
 
@@ -504,7 +532,7 @@ class TreeToJS(Transformer):
         :param args:
         :return:
         """
-        if type(args[0]) == type(args[1]):
+        if type(args[0]) in [float, int, bool] and type(args[1]) in [float, int, bool]:
             return args[0] / args[1]
         else:
             if type(args[0]) == str and type(args[1]) in [float, int]:
@@ -567,6 +595,20 @@ class TreeToJS(Transformer):
                             return float(args[0]) / 0
                         except ValueError:
                             return 'NaN'
+            elif type(args[0]) == str and type(args[1]) == str:
+                try:
+                    return int(args[0]) / int(args[1])
+                except ValueError:
+                    try:
+                        return float(args[0]) / float(args[1])
+                    except ValueError:
+                        try:
+                            return int(args[0]) / float(args[1])
+                        except ValueError:
+                            try:
+                                return float(args[0]) / int(args[1])
+                            except ValueError:
+                                return 'NaN'
             else:
                 return 'NaN'
 

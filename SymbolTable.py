@@ -1,7 +1,8 @@
 # The symbol table is organized as a dictionary, where the keys are the variable identifiers and the values are the attributes
 class SymbolTable:
-    def __init__(self, initial_state={}):
+    def __init__(self, initial_state={}, parent=None):
         self.table = initial_state
+        self.parent = parent
 
     def insert(self, identifier, attributes):
         """

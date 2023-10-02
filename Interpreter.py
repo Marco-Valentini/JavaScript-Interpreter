@@ -59,7 +59,6 @@ class JavaScriptInterpreter(Interpreter):
             else:
                 return false_branch
 
-
     def function_declaration(self, tree):
         declaration = tree.children[0]
         identifier = tree.children[1]
@@ -78,7 +77,6 @@ class JavaScriptInterpreter(Interpreter):
 
     def function_call(self, tree):
         identifier = tree.children[0]
-
         # take the argument list and check if the number of arguments is the same as the number of parameters
         if len(tree.children) == 3:
             # check if the number of arguments is the same as the number of parameters
