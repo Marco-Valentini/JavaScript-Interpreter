@@ -7,6 +7,7 @@
 
 from lark.visitors import Transformer
 from SymbolTable import symbol_table
+from error_handling import  *
 
 # con v_args si possono specificare una serie di parametri: inline (i children dell'albero sono passati come *args e non come una lista)
 #  meta (if meta=True) dà una serie di info come riga e colonna a cui ci troviamo
@@ -44,6 +45,7 @@ class TreeToJS(Transformer):
             #TODO gestire SyntaxError identifier already declared (es. const a = 2; let a = 3;)
             symbol_table.insert(args[1].value, {'declaration': args[0].value, 'value': args[3], 'type': type(args[3])})
             return args[3]
+
 
     def variable_assignment(self, args):
         #TODO gestire se la variabile non è stata dichiarata, se il valore non è un numero
@@ -672,7 +674,7 @@ class TreeToJS(Transformer):
         :param args:
         :return:
         """
-        if type(args[0]) == str:  # case of template literal
+        if type(args[0]) in [str, list]:  # case of template literal or array
             return args[0]
         elif args[0].type == 'FLOAT':
             return float(args[0].value)
@@ -686,8 +688,11 @@ class TreeToJS(Transformer):
             else:
                 return False
         elif args[0].type == 'IDENTIFIER':
-            return symbol_table.find(args[0].value)['value']
-        return args[0].value
+            try:
+                return symbol_table.find(args[0].value)['value']
+            except ReferenceError:
+                print('ReferenceError: ' + args[0].value + ' is not defined')
+
 
     def term(self, args):
         return args[0]
@@ -697,5 +702,8 @@ class TreeToJS(Transformer):
 
     def array_access(self, args):
         # TODO vincolo che l'indice sia int, ma anche IndexOutOfBoundsException
-        arr = symbol_table.find(args[0].value)['value']
-        return arr[args[1]]
+        try:
+            arr = symbol_table.find(args[0].value)['value']
+            return arr[args[1]]
+        except IndexError:
+            return 'undefined'
