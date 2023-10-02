@@ -6,7 +6,7 @@ console.log(x - y);  // Subtraction
 console.log(x * y);  // Multiplication
 console.log(x / y);  // Division
 
-/* examples of type coercion */
+// examples of type coercion */
 console.log("10" + 5);  // "105"
 console.log("10" - 5);  // 5
 console.log("10" * 5);  // 50

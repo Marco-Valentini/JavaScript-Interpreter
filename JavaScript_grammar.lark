@@ -135,7 +135,6 @@ STRING: "'" _STRING_INNER* "'"
 // comment management (ignore them)
 MULTILINE_COMMENT: "/*" /.*/ "*/"
 INLINE_COMMENT: "//" /[^\n]*/
-NEWLINE: "\n"
 
 %import common.ESCAPED_STRING
 %import common._STRING_INNER
@@ -144,6 +143,5 @@ NEWLINE: "\n"
 %import common.FLOAT
 %import common.WS
 
-%ignore NEWLINE
 %ignore WS
 %ignore INLINE_COMMENT

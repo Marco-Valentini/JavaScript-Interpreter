@@ -97,6 +97,8 @@ def main(script="javascript_tests/arithmetic_operations.js",console=False, verbo
         with open(script, "r") as f:
             for line in f:
                 try:
+                    if line == "\n":
+                        continue
                     tree = parse(line)
                 except UnexpectedInput as u:
                     print(f"Internal Lark error: parsing failed due to unexprected input\n" + u)  # gestisce anche lexical errors?
