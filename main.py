@@ -1,4 +1,5 @@
 from lark import Lark, UnexpectedInput
+from lark.exceptions import UnexpectedToken
 from Interpreter import JavaScriptInterpreter
 from error_handling import *
 
@@ -48,8 +49,8 @@ def parse(javascript_script):
     else:
         return tree
 
-def main(script=None, verbose=True):
-    if script is None:
+def main(script="javascript_tests/arithmetic_operations.js",console=False, verbose=True):
+    if script is None or console is True:
         while True:
             try:
                 console = input('JS>>> ')
@@ -60,7 +61,12 @@ def main(script=None, verbose=True):
             try:
                 tree = parse(console)
             except UnexpectedInput as u:
-                print(f"Internal Lark error: parsing failed \n"+u)  # gestisce anche lexical errors?
+                print(f"Internal Lark error: parsing failed \n")  # gestisce anche lexical errors?
+                print(u)
+                continue
+            except UnexpectedToken as e:
+                print(f"Internal Lark error: parsing failed due to unexpected token\n")
+                print(e)
                 continue
             except MissingClosingParenthesisInArgumentList as e:
                 print(e)
@@ -87,14 +93,46 @@ def main(script=None, verbose=True):
                 continue
             if verbose:
                 print(interpeted_tree)
+    else:
+        with open(script, "r") as f:
+            for line in f:
+                try:
+                    tree = parse(line)
+                except UnexpectedInput as u:
+                    print(f"Internal Lark error: parsing failed due to unexprected input\n" + u)  # gestisce anche lexical errors?
+                    exit()
+                except UnexpectedToken as e:
+                    print(f"Internal Lark error: parsing failed due to unexpected token\n" + e)
+                    exit()
+                except MissingClosingParenthesisInArgumentList as e:
+                    print(e)
+                    exit()
+                except MissingClosingParenthesisAfterCondition as e:
+                    print(e)
+                    exit()
+                except MissingClosingParenthesisAfterElementList as e:
+                    print(e)
+                    exit()
+                except MissingClosingParenthesisAfterFunctionBody as e:
+                    print(e)
+                    exit()
+                except MissingEqualInConstDeclaration as e:
+                    print(e)
+                    exit()
+                except UnexpectedEndOfInput as e:
+                    print(e)
+                    exit()
+                try:
+                    interpeted_tree = JavaScriptInterpreter().visit(tree)
+                except IsNotAFunction as e:
+                    print(e)
+                    exit()
+                if verbose:
+                    print(interpeted_tree)
 
 
 if __name__ == '__main__':
     main()
 
 # TODO serve implementare una logica che prenda gli statement uno alla volta dai file e quindi
-with open("test.js", "r") as f:
-    for line in f:
-        tree = parser.parse(line)
-        interpeted_tree = JavaScriptInterpreter().visit(tree)
-        print(interpeted_tree)
+

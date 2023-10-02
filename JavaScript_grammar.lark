@@ -90,6 +90,8 @@ factor : STRING
        | IDENTIFIER "[" expression "]" -> array_access
        | input_statement
        | array
+       | MULTILINE_COMMENT
+
 
 array: "[" [expression ("," expression)*] "]"
 
@@ -130,9 +132,10 @@ BOOL.1: "true" | "false"
 STRING: "'" _STRING_INNER* "'"
         | "\"" _STRING_INNER* "\""
 
-
 // comment management (ignore them)
-COMMENT: "//" /[^\n]/* | "/*" /./* "*/"
+MULTILINE_COMMENT: "/*" /.*/ "*/"
+INLINE_COMMENT: "//" /[^\n]*/
+NEWLINE: "\n"
 
 %import common.ESCAPED_STRING
 %import common._STRING_INNER
@@ -141,5 +144,6 @@ COMMENT: "//" /[^\n]/* | "/*" /./* "*/"
 %import common.FLOAT
 %import common.WS
 
-%ignore COMMENT
+%ignore NEWLINE
 %ignore WS
+%ignore INLINE_COMMENT

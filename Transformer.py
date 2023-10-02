@@ -692,6 +692,8 @@ class TreeToJS(Transformer):
                 return symbol_table.find(args[0].value)['value']
             except ReferenceError:
                 print('ReferenceError: ' + args[0].value + ' is not defined')
+        elif args[0].type in ['MULTILINE_COMMENT']:
+            return ''
 
 
     def term(self, args):
