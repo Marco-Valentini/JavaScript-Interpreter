@@ -48,7 +48,7 @@ def parse(javascript_script):
     else:
         return tree
 
-def main(script=None, debug=False):
+def main(script=None, verbose=True):
     if script is None:
         while True:
             try:
@@ -80,9 +80,12 @@ def main(script=None, debug=False):
             except UnexpectedEndOfInput as e:
                 print(e)
                 continue
-
-            interpeted_tree = JavaScriptInterpreter().visit(tree)
-            if debug:
+            try:
+                interpeted_tree = JavaScriptInterpreter().visit(tree)
+            except IsNotAFunction as e:
+                print(e)
+                continue
+            if verbose:
                 print(interpeted_tree)
 
 

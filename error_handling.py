@@ -33,10 +33,15 @@ class UnexpectedEndOfInput(JavaScriptSyntaxError):
     label = 'Syntax Error: Unexpected end of input'
 
 
-class JavaScriptKeywordError(JavaScriptSyntaxError):
-    pass
-
-
 # semantic error are handled with Python Exception exception
-class ReferenceError(Exception):
+
+class JavaScriptSemanticError(Exception):
+    def __str__(self):  # taken from lark documentation
+        context, line, column = self.args
+        return '%s at line %s, column %s.\n\n%s' % (self.label, line, column, context)
+class ReferenceError(JavaScriptSemanticError):
     pass
+
+class IsNotAFunction(JavaScriptSemanticError):
+    pass
+

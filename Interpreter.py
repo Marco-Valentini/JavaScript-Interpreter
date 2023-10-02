@@ -1,7 +1,7 @@
 # From Lark's Documentation:
 # The interpreter walks the tree starting at the root, it visits the tree from the root to the leaves (top-down).
 # For each node it calls its methods (inherited) according to tree.data. Differently from transformer, the interpreter
-# does not visit the sub branches, unless it is explicitly told to do so.
+# does not visit the sub-branches, unless it is explicitly told to do so.
 from copy import deepcopy
 
 # Interpreter allows to implement branching and loops
@@ -9,6 +9,7 @@ from copy import deepcopy
 from lark.visitors import Interpreter
 from Transformer import TreeToJS
 from SymbolTable import symbol_table
+from error_handling import *
 
 
 js_transformer = TreeToJS()  # the transformer is used to visit the tree from the leaves to the root (bottom-up)
@@ -77,7 +78,8 @@ class JavaScriptInterpreter(Interpreter):
 
     def function_call(self, tree):
         identifier = tree.children[0]
-        # take the argument list and check if the number of arguments is the same as the number of parameters
+
+        # take the argument list
         if len(tree.children) == 3:
             argument_list = []  # if there are no arguments
         elif len(tree.children[2].children) > 1:  # if there are more than one argument
@@ -86,34 +88,48 @@ class JavaScriptInterpreter(Interpreter):
             argument_list = [js_transformer.transform(tree.children[2])]
 
         function = symbol_table.find(identifier)
-        if function['declaration'] == 'function':
-            # take the parameter list
-            parameter_list = function['parameter_list']
-            # take the function body
-            function_body = function['body']
+        try:
+            if function['declaration'] == 'function':
+                # take the parameter list
+                parameter_list = function['parameter_list']
+                # copy the global parameter
+                temp = {}
 
-            copy_symbol_table = deepcopy(symbol_table)  # local symbol table for the function
-            for i in range(len(parameter_list)):
-                if parameter_list[i] in symbol_table.table.keys():
-                    symbol_table.update(parameter_list[i], {'declaration': 'var', 'value': argument_list[i], 'type': type(argument_list[i])})
-                else:
-                    symbol_table.insert(parameter_list[i], {'declaration': 'var', 'value': argument_list[i], 'type': type(argument_list[i])})
-            if function_body.data == 'block':
-                for i in range(len(function_body.children)):
-                    if function_body.children[i].data == 'return_statement':
-                        return js_transformer.transform(function_body.children[i])
+                # take the function body
+                function_body = function['body']
+
+                for i in range(len(parameter_list)):
+                    if parameter_list[i] in symbol_table.table.keys():
+                        temp[parameter_list[i]] = deepcopy(symbol_table.table[parameter_list[i]])
+                        symbol_table.update(parameter_list[i], {'declaration': 'var', 'value': argument_list[i], 'type': type(argument_list[i])})
                     else:
-                        visited_body = self.visit(function_body.children[i])
-                #symbol_table.table = deepcopy(copy_symbol_table.table)  # restore the global symbol table
+                        symbol_table.insert(parameter_list[i], {'declaration': 'var', 'value': argument_list[i], 'type': type(argument_list[i])})
+                if function_body.data == 'block':
+                    for i in range(len(function_body.children)):
+                        if function_body.children[i].data == 'return_statement':
+                            out = js_transformer.transform(function_body.children[i])
+                            for key in temp.keys():
+                                symbol_table.update(key, temp[key])
+                            return out
+                        else:
+                            visited_body = self.visit(function_body.children[i])
+                    for key in temp.keys():
+                        symbol_table.update(key, temp[key])
+                    return 'undefined'
+                elif function_body.data == 'return_statement':
+                    out = js_transformer.transform(function_body)
+                    for key in temp.keys():
+                        symbol_table.update(key, temp[key])
+                    return out
+                else:
+                    visited_body = self.visit(function_body)
+                for key in temp.keys():
+                    symbol_table.update(key, temp[key])
                 return 'undefined'
-            elif function_body.data == 'return_statement':
-                return js_transformer.transform(function_body)
             else:
-                visited_body = self.visit(function_body)
-            symbol_table.table = deepcopy(copy_symbol_table.table)
-            return 'undefined'
-        else:
-            raise Exception('TypeError: ' + identifier + ' is not a function')
+                raise IsNotAFunction
+        except IsNotAFunction:
+            print('TypeError: ' + identifier + ' is not a function')
 
     def return_statement(self, tree):
         return js_transformer.transform(tree)
