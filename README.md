@@ -68,6 +68,10 @@ JavaScript Error Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScr
 - array declaration
 - array access
 
+### Comments (ignored)
+- single line comment (//)
+- multi line comment (/* */)
+
 ### Managed errors
 - lexical errors (typing errors)
 - syntax error
