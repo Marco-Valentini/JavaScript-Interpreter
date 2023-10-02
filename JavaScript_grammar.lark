@@ -122,7 +122,7 @@ negative: "-" expression
 # ternary condition statement
 ?ternary_condition_statement: (logical_statement | expression) "?" statement ":" statement
 
-BOOL .1: "true" | "false"
+BOOL.1: "true" | "false"
 
 STRING: "'" _STRING_INNER* "'"
         | "\"" _STRING_INNER* "\""

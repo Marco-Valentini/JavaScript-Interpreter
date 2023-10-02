@@ -12,13 +12,13 @@ Error Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Referen
 - String
 - Array
 
-### Arithmetic Operations (with type coercion simulation)
+### Arithmetic Operations (with type coercition simulation)
 - addition (+)
 - subtraction (-)
 - multiplication (*)
 - division (/)
 
-### Arithmetic Operations (with type coercion simulation)
+### Arithmetic Operations (with type coercition simulation)
 - equal (==)
 - not equal (!=)
 - strict equal (===)
@@ -38,7 +38,7 @@ Error Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Referen
 - identifier --
 - -- identifier
 
-### Logical operations (with type coercion simulation)
+### Logical operations (with type coercition simulation)
 - not (!)
 - or (||)
 - and (&&)
@@ -68,7 +68,7 @@ Error Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Referen
 - array declaration
 - array access
 
-### Handled errors
+### Managed errors
 - lexical errors (typing errors)
 - syntax error
     - non-matched parenthesis

@@ -1,0 +1,1 @@
+# syntax error are handled with Python SyntaxError exception
