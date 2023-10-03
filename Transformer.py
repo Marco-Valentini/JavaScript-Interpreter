@@ -1,17 +1,11 @@
 # From Lark's Documentation:
 # The transfomer processes the parse tree bottom-up, starting from the leaves and going up to the root.
 # For each node it calls the related method according to the nodes's data, and uses the returned value to replace the
-# node, creating a new structure. When the transformer doesn't find the method for a node, it simply returns the node
-
-# A transformer without methods essentially performs a non-memorized partial deepcopy
+# node, creating a new structure. When the transformer doesn't find the method for a node, it simply returns the node.
 
 from lark.visitors import Transformer
 from SymbolTable import symbol_table
 from error_handling import  *
-
-# con v_args si possono specificare una serie di parametri: inline (i children dell'albero sono passati come *args e non come una lista)
-#  meta (if meta=True) dà una serie di info come riga e colonna a cui ci troviamo
-
 
 class TreeToJS(Transformer):
     """
@@ -20,35 +14,57 @@ class TreeToJS(Transformer):
     """
     def print_statement(self, args):
         if not args:
-            return 'undefined'
+            return 'undefined' # when no message is specified
         else:
             return args[0]
 
     def input_statement(self, args):
         if not args:
-            return input()
+            return input()  # when no input message is specified
         else:
             return input(args[0])
 
     def variable_statement(self, args):
-        if len(args) == 2:  # variable declaration (es. let a)
-            symbol_table.insert(args[1].value, {'declaration': args[0].value, 'value': 'undefined', 'type': 'undefined'})
-            return 'undefined'
-        elif len(args) == 3:  # variable assignment (es. a = 2)
-            #TODO gestire SyntaxError identifier already declared (es. const a = 2; let a = 3;) fai check su symbol_table[args[0].value]['declaration'] == 'const'
-            if args[0].value in symbol_table.table.keys():
-                symbol_table.update(args[0].value, {'declaration': symbol_table.find(args[0].value)['declaration'], 'value': args[2], 'type': type(args[2])})
-            else:  # the variable has not been declared yet
-                symbol_table.insert(args[0].value, {'declaration': 'var', 'value': args[2], 'type': type(args[2])})
-            return args[2]
-        elif len(args) == 4:  # variable declaration and assignment (es. let a = 2)
-            #TODO gestire SyntaxError identifier already declared (es. const a = 2; let a = 3;)
-            symbol_table.insert(args[1].value, {'declaration': args[0].value, 'value': args[3], 'type': type(args[3])})
-            return args[3]
+        try:
+            if len(args) == 2:  # variable declaration (es. let a)
+                if args[1].value in reserved_words:
+                    wrong_id = args[1].value
+                    raise ReservedWordAsIdentifier
+                symbol_table.insert(args[1].value, {'declaration': args[0].value, 'value': 'undefined', 'type': 'undefined'})
+                return 'undefined'
+            elif len(args) == 3:  # variable assignment (es. a = 2)
+                if args[0].value in reserved_words:
+                    wrong_id = args[0].value
+                    raise ReservedWordAsIdentifier
+                if args[0].value in symbol_table.table.keys():
+                    if symbol_table.find(args[0].value)['declaration'] == 'const':
+                        raise ConstAssignmentTypeError
+                    else:
+                        symbol_table.update(args[0].value, {'declaration': symbol_table.find(args[0].value)['declaration'], 'value': args[2], 'type': type(args[2])})
+                else:  # the variable has not been declared yet
+                    symbol_table.insert(args[0].value, {'declaration': 'var', 'value': args[2], 'type': type(args[2])})
+                return args[2]
+            elif len(args) == 4:  # variable declaration and assignment (es. let a = 2)
+                if args[1].value in reserved_words:
+                    wrong_id = args[1].value
+                    raise ReservedWordAsIdentifier
+                if args[1].value in symbol_table.table.keys():
+                    if args[0].value == symbol_table.find(args[1].value)['declaration']:
+                        symbol_table.update(args[1].value, {'declaration': symbol_table.find(args[0].value)['declaration'], 'value': args[3], 'type': type(args[3])})
+                    else:
+                        raise IdentifierAlreadyDeclared
+                else:
+                    symbol_table.insert(args[1].value, {'declaration': args[0].value, 'value': args[3], 'type': type(args[3])})
+                return args[3]
+        except IdentifierAlreadyDeclared:
+            print('SyntaxError: Identifier ' + args[1].value + ' has already been declared')
+        except ConstAssignmentTypeError:
+            print('TypeError: Assignment to constant variable')
+        except ReservedWordAsIdentifier:
+            print('SyntaxError: Unexpected token '+ wrong_id)
 
 
     def variable_assignment(self, args):
-        #TODO gestire se la variabile non è stata dichiarata, se il valore non è un numero
         if args[0] == '++':
             symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': symbol_table.find(args[1])['value'] + 1, 'type': type(symbol_table.find(args[1])['value'] + 1)})
             return symbol_table.find(args[1])['value']
@@ -83,7 +99,7 @@ class TreeToJS(Transformer):
 
     def equality(self, args):
         """
-        This method is used to check if two values are equal. It simulates the JavaScript type coercition
+        This method is used to check if two values are equal. It simulates the JavaScript type coercion
         :param args:
         :return:
         """
@@ -661,7 +677,7 @@ class TreeToJS(Transformer):
 
     def template_literal(self, args):
         temp = ""
-        for arg in args:  #TODO rendi più efficiente modificando la grammatica
+        for arg in args:
             if type(arg) in [float, int, bool]:
                 temp += str(arg) + " "
             else:
@@ -692,9 +708,6 @@ class TreeToJS(Transformer):
                 return symbol_table.find(args[0].value)['value']
             except ReferenceError:
                 print('ReferenceError: ' + args[0].value + ' is not defined')
-        # elif args[0].type in ['MULTILINE_COMMENT']:
-        #     return ''
-
 
     def term(self, args):
         return args[0]
@@ -703,9 +716,14 @@ class TreeToJS(Transformer):
         return args[0]
 
     def array_access(self, args):
-        # TODO vincolo che l'indice sia int, ma anche IndexOutOfBoundsException
         try:
+            if type(args[1]) == str:
+                args[1] = int(args[1])
             arr = symbol_table.find(args[0].value)['value']
             return arr[args[1]]
-        except IndexError:
+        except IndexError:  # es index out of bounds
+            return 'undefined'
+        except TypeError:  # es float index
+            return 'undefined'
+        except ValueError: # es string index
             return 'undefined'

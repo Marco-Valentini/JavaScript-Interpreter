@@ -7,7 +7,6 @@ from argparse import ArgumentParser # to provide Command Line Interface (CLI)
 # the grammar is contained in the file JavaScript_grammar.lark
 parser = Lark.open("JavaScript_grammar.lark", parser='lalr', debug=True)
 
-
 def parse(javascript_script):
     """
     Wrapper for the parser.parse method including error handling
@@ -61,26 +60,24 @@ def main():
     argument_parser.add_argument("-c", "--console", help="Starts the interpreter in console mode", action="store_true")
     argument_parser.add_argument("-d", "--debug", help="Prints the tree of the process for debug purposes",
                                  action="store_true")
-
+    # get the arguments from the command line instruction
     args = argument_parser.parse_args()
 
     if args.console or args.script is None:  # if no script is provided, the interpreter starts in console mode
         while True:
             try:
-                console = input('JS>>> ')
+                console = input('Enter JavaScript code>> ')
                 if console == "" or console.startswith("//"):
                     continue
             except EOFError:
                 break
             try:
                 tree = parse(console)
-            except UnexpectedInput as u:
-                print(f"Internal Lark error: parsing failed \n")  # gestisce anche lexical errors?
-                print(u)
+            except UnexpectedInput:
+                print(f"LexicalError: scanning failed due to unexpected input\n")  # gestisce anche lexical errors?
                 continue
-            except UnexpectedToken as e:
-                print(f"Internal Lark error: parsing failed due to unexpected token\n")
-                print(e)
+            except UnexpectedToken:
+                print(f"LexicalError: scanning failed due to unexpected token\n")
                 continue
             except MissingClosingParenthesisInArgumentList as e:
                 print(e)
@@ -96,7 +93,7 @@ def main():
                 continue
             except MissingEqualInConstDeclaration as e:
                 print(e)
-                continue  # in console vogliamo continuare
+                continue
             except UnexpectedEndOfInput as e:
                 print(e)
                 continue
@@ -108,17 +105,18 @@ def main():
             if args.debug:
                 print("Here the parse tree for debug purposes: \n")
                 print(tree.pretty())
-            print(interpeted_tree)
+            if interpeted_tree:
+                print(interpeted_tree)
     elif args.script:
         with open(args.script, "r") as f:
             file = f.read()
             try:
                 tree = parse(file)
-            except UnexpectedInput as u:
-                print(f"Internal Lark error: parsing failed due to unexprected input\n" + u)  # gestisce anche lexical errors?
+            except UnexpectedInput:
+                print(f"LexicalError: scanning failed due to unexpected input\n")  # gestisce anche lexical errors?
                 exit()
-            except UnexpectedToken as e:
-                print(f"Internal Lark error: parsing failed due to unexpected token\n" + e)
+            except UnexpectedToken:
+                print(f"LexicalError: scanning failed due to unexpected token\n")
                 exit()
             except MissingClosingParenthesisInArgumentList as e:
                 print(e)
@@ -146,9 +144,8 @@ def main():
             if args.debug:
                 print("Here the parse tree for debug purposes: \n")
                 print(tree.pretty()) # print the parse tree
-            print(interpeted_tree)
-
-
+            if interpeted_tree:
+                print(interpeted_tree)
 
 if __name__ == '__main__':
     main()

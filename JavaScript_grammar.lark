@@ -12,11 +12,12 @@
             | function_call ";"?
             | ternary_condition_statement
 
+// Logical productions
 ?logical_statement : "(" logical_statement ")"
                   | logical_and
                   | logical_or
                   | logical_not
-                  | relational  # <, >, <=, >=
+                  | relational  # <, >, <=, >=, ==, !=, ===, !==
 
 ?relational: expression "<" expression -> less_than
             | expression ">" expression -> greater_than
@@ -41,7 +42,24 @@ logical_not: "!" logical_statement
 ?strict_equality: expression "===" expression
                     | expression "!==" expression -> strict_inequality
 
+// Arithmetic productions
+additive: expression "+" expression -> add
+           | expression "-" expression -> sub
+
+multiplicative: term "*" term -> mul
+               | term "/" term -> div
+
+negative: "-" expression
+         | "-" "(" negative ")"
+
 ?block: "{" statement* "}"
+
+// input and output statements
+input_statement: "prompt" "(" expression? ")" ";"?  # prompt can take whatever input you give to it
+                | "prompt" "(" variable_assignment ")" ";"?
+                | "prompt" "(" logical_statement ")" ";"?
+                | "prompt" "(" function_call ")" ";"?
+                | "prompt" "(" ternary_condition_statement ")" ";"?
 
 ?print_statement: "console" "." "log" "(" expression? ")" ";"?
                 | "console" "." "log" "(" variable_assignment ")" ";"?
@@ -49,40 +67,32 @@ logical_not: "!" logical_statement
                 | "console" "." "log" "(" function_call ")" ";"?
                 | "console" "." "log" "(" ternary_condition_statement ")" ";"?
 
-input_statement: "prompt" "(" expression? ")" ";"?  # prompt can take whatever input you give to it
-                | "prompt" "(" variable_assignment ")" ";"?
-                | "prompt" "(" logical_statement ")" ";"?
-                | "prompt" "(" function_call ")" ";"?
-                | "prompt" "(" ternary_condition_statement ")" ";"?
-
-# the ! is required to not filter keywords like let/const/var
+// the ! is required to not filter keywords like let/const/var
 !variable_statement: ("let"|"var") IDENTIFIER ("=" expression)?
-                    |("let"|"var")? IDENTIFIER ("=" expression)  # we can define but not assign a variable or vice versa
+                    |("let"|"var")? IDENTIFIER ("=" expression)  // we can define but not assign a variable or vice versa
                     |"const" IDENTIFIER "=" expression
 
 !variable_assignment: IDENTIFIER "+=" expression
                     | IDENTIFIER "-=" expression
                     | IDENTIFIER "*=" expression
                     | IDENTIFIER "/=" expression
-                    | IDENTIFIER "++"
-                    | IDENTIFIER "--"
-                    | "++" IDENTIFIER
-                    | "--" IDENTIFIER
+                    | IDENTIFIER "++" // post-increment
+                    | IDENTIFIER "--" // post-decrement
+                    | "++" IDENTIFIER // pre-increment
+                    | "--" IDENTIFIER // pre-decrement
 
 ?expression: "(" expression ")"
             | additive
             | term
             | negative
 
-
 term : multiplicative
      | factor
      | "(" additive ")"
      | "(" term ")"
 
-
 factor : STRING
-       | template_literal  # because it is just a more complex string
+       | template_literal  // because it is just a more complex string
        | INT
        | FLOAT
        | BOOL
@@ -92,15 +102,6 @@ factor : STRING
        | array
 
 array: "[" [expression ("," expression)*] "]"
-
-additive: expression "+" expression -> add
-           | expression "-" expression -> sub
-
-multiplicative: term "*" term -> mul
-               | term "/" term -> div
-
-negative: "-" expression
-         | "-" "(" negative ")"
 
 ?template_literal: "`" (template_string_part | "${" expression "}")* "`"
 
@@ -116,13 +117,13 @@ negative: "-" expression
 
 !return_statement: "return" expression? ";"?
 
-# branching production
-?if_statement : "if" "(" (logical_statement | expression) ")" block ("else" block)?  # this way we include all the possible cases, statement cn be a block or another if statement
+// branching production
+?if_statement : "if" "(" (logical_statement | expression) ")" block ("else" block)?  // this way we include all the possible cases, statement can be a block or another if statement
 
-# iteration production
+// iteration production
 ?while_statement  : "while" "(" (logical_statement | expression) ")" block
 
-# ternary condition statement
+// ternary condition statement
 ?ternary_condition_statement: (logical_statement | expression) "?" statement ":" statement
 
 BOOL.1: "true" | "false"
@@ -134,6 +135,7 @@ STRING: "'" _STRING_INNER* "'"
 MULTILINE_COMMENT: "/*" /.*/ "*/"
 INLINE_COMMENT: "//" /[^\n]*/
 NEWLINE: "\n"
+
 %import common.ESCAPED_STRING
 %import common._STRING_INNER
 %import common.CNAME -> IDENTIFIER

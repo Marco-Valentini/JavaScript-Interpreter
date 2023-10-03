@@ -4,16 +4,15 @@
 # does not visit the sub-branches, unless it is explicitly told to do so.
 from copy import deepcopy
 
-# Interpreter allows to implement branching and loops
+# Interpreter allows to implement branching, loops and functions
 
 from lark.visitors import Interpreter
 from Transformer import TreeToJS
 from SymbolTable import symbol_table
 from error_handling import *
 
-
-js_transformer = TreeToJS()  # the transformer is used to visit the tree from the leaves to the root (bottom-up)
-
+# the transformer is used to visit the tree from the leaves to the root (bottom-up)
+js_transformer = TreeToJS()
 
 class JavaScriptInterpreter(Interpreter):
 
@@ -61,34 +60,40 @@ class JavaScriptInterpreter(Interpreter):
                 return false_branch
 
     def function_declaration(self, tree):
-        declaration = tree.children[0]
-        identifier = tree.children[1]
-        if len(tree.children) == 5:
-            parameter_list = []
-            function_body = tree.children[4]  # it is a subtree
-        else:
-            if str(type(tree.children[3])) == "<class 'lark.lexer.Token'>":
-                parameter_list = [tree.children[3]]
-            elif str(type(tree.children[3])) == "<class 'lark.tree.Tree'>":
-                parameter_list = tree.children[3].children
-            function_body = tree.children[5]  # it is a subtree
-        symbol_table.insert(identifier, {'declaration': declaration, 'parameter_list': parameter_list,
-                                         'body': function_body, 'type': declaration})
-        return 'undefined'
+        try:
+            declaration = tree.children[0]
+            identifier = tree.children[1]
+            if identifier in reserved_words:
+                raise ReservedWordAsIdentifier
+            if len(tree.children) == 5:
+                parameter_list = []
+                function_body = tree.children[4]  # it is a subtree
+            else:
+                if str(type(tree.children[3])) == "<class 'lark.lexer.Token'>":
+                    parameter_list = [tree.children[3]]
+                elif str(type(tree.children[3])) == "<class 'lark.tree.Tree'>":
+                    parameter_list = tree.children[3].children
+                function_body = tree.children[5]  # it is a subtree
+            symbol_table.insert(identifier, {'declaration': declaration, 'parameter_list': parameter_list,
+                                             'body': function_body, 'type': declaration})
+            return 'undefined'
+        except ReservedWordAsIdentifier:
+            print('SyntaxError: Unexpected token ' + identifier)
 
     def function_call(self, tree):
-        identifier = tree.children[0]
-
-        # take the argument list
-        if len(tree.children) == 3:
-            argument_list = []  # if there are no arguments
-        elif len(tree.children[2].children) > 1:  # if there are more than one argument
-            argument_list = js_transformer.transform(tree.children[2]).children
-        else:  # if there is only one argument
-            argument_list = [js_transformer.transform(tree.children[2])]
-
-        function = symbol_table.find(identifier)
         try:
+            identifier = tree.children[0]
+
+            # take the argument list
+            if len(tree.children) == 3:
+                argument_list = []  # if there are no arguments
+            elif len(tree.children[2].children) > 1:  # if there are more than one argument
+                argument_list = js_transformer.transform(tree.children[2]).children
+            else:  # if there is only one argument
+                argument_list = [js_transformer.transform(tree.children[2])]
+            # search for the function in the symbol table
+            function = symbol_table.find(identifier)
+            # check if the identifier is associated with function
             if function['declaration'] == 'function':
                 # take the parameter list
                 parameter_list = function['parameter_list']
@@ -130,6 +135,8 @@ class JavaScriptInterpreter(Interpreter):
                 raise IsNotAFunction
         except IsNotAFunction:
             print('TypeError: ' + identifier + ' is not a function')
+        except ReferenceError:
+            print('ReferenceError: ' + identifier + ' is not defined')
 
     def return_statement(self, tree):
         return js_transformer.transform(tree)
