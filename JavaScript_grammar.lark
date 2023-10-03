@@ -113,7 +113,7 @@ array: "[" [expression ("," expression)*] "]"
 
 !function_call: IDENTIFIER "(" argument_list? ")"
 
-?argument_list: (IDENTIFIER "=")? expression ("," (IDENTIFIER "=")? expression)*
+?argument_list: expression ("," expression)*
 
 !return_statement: "return" expression? ";"?
 
