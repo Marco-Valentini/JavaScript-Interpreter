@@ -50,7 +50,7 @@ class TreeToJS(Transformer):
                     raise ReservedWordAsIdentifier
                 if args[1].value in symbol_table.table.keys():
                     if args[0].value == symbol_table.find(args[1].value)['declaration']:
-                        symbol_table.update(args[1].value, {'declaration': symbol_table.find(args[0].value)['declaration'], 'value': args[3], 'type': type(args[3])})
+                        symbol_table.update(args[1].value, {'declaration': args[0].value, 'value': args[3], 'type': type(args[3])})
                     else:
                         raise IdentifierAlreadyDeclared
                 else:
@@ -65,43 +65,56 @@ class TreeToJS(Transformer):
 
 
     def variable_assignment(self, args):
-        if args[0] == '++':
-            if args[1] in [int, float]:
-                symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': symbol_table.find(args[1])['value'] + 1, 'type': type(symbol_table.find(args[1])['value'] + 1)})
-                return symbol_table.find(args[1])['value']
+        if args[0] == '++':  # pre increment
+            value = symbol_table.find(args[1])['value']
+            if type(value) in [int, float]:
+                value += 1
+                symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': value, 'type': type(value)})
             else:
+                value = 'NaN'
                 symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': 'NaN', 'type': 'NaN'})
-                return symbol_table.find(args[1])['value']
-        elif args[0] == '--':
-            if args[1] in [int, float]:
-                symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': symbol_table.find(args[1])['value'] - 1, 'type': type(symbol_table.find(args[1])['value'] - 1)})
+            return value
+        elif args[0] == '--':  # pre decrement
+            value = symbol_table.find(args[1])['value']
+            if type(value) in [int, float]:
+                value -= 1
+                symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': value, 'type': type(value)})
             else:
+                value = 'NaN'
                 symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': 'NaN', 'type': 'NaN'})
+            return value
         elif args[1] == '+=':
-            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': self.add([symbol_table.find(args[0])['value'], args[2]]), 'type': type(self.add([symbol_table.find(args[0])['value'], args[2]]))})
+            value = self.add([symbol_table.find(args[0])['value'], args[2]])
+            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': value, 'type': type(value)})
+            return value
         elif args[1] == '-=':
-            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': self.sub([symbol_table.find(args[0])['value'], args[2]]), 'type': type(self.sub([symbol_table.find(args[0])['value'], args[2]]))})
+            value = self.sub([symbol_table.find(args[0])['value'], args[2]])
+            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': value, 'type': type(value)})
+            return value
         elif args[1] == '*=':
-            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': self.mul([symbol_table.find(args[0])['value'], args[2]]), 'type': type(self.mul([symbol_table.find(args[0])['value'], args[2]]))})
+            value = self.mul([symbol_table.find(args[0])['value'], args[2]])
+            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': value, 'type': type(value)})
+            return value
         elif args[1] == '/=':
-            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': self.div([symbol_table.find(args[0])['value'], args[2]]), 'type': type(self.div([symbol_table.find(args[0])['value'], args[2]]))})
-        elif args[1] == '++':
-            if args[0] in [int, float]:
-                value = symbol_table.find(args[0])['value']
-                symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] + 1, 'type': type(symbol_table.find(args[0])['value'] + 1)})
+            value = self.div([symbol_table.find(args[0])['value'], args[2]])
+            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': value, 'type': type(value)})
+            return value
+        elif args[1] == '++':  # post increment
+            value = symbol_table.find(args[0])['value']
+            if type(value) in [int, float]:
+                symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': value + 1, 'type': type(value + 1)})
             else:
                 value = 'NaN'
                 symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': 'NaN', 'type': 'NaN'})
             return value
-        elif args[1] == '--':
-            if args[0] in [int, float]:
-                value = symbol_table.find(args[0])['value']
-                symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] - 1, 'type': type(symbol_table.find(args[0])['value'] - 1)})
+        elif args[1] == '--':  # post decrement
+            value = symbol_table.find(args[0])['value']
+            if type(value) in [int, float]:
+                symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': value - 1, 'type': type(value - 1)})
             else:
                 value = 'NaN'
                 symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': 'NaN', 'type': 'NaN'})
             return value
-        return symbol_table.find(args[0])['value']
 
     def return_statement(self, args):
         return args[1]

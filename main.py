@@ -105,7 +105,11 @@ def main():
             if args.debug:
                 print("Here the parse tree for debug purposes: \n")
                 print(tree.pretty())
-            if interpeted_tree:
+            if type(interpeted_tree) == list:
+                for out in interpeted_tree:
+                    if out is not None:
+                        print(out)
+            elif interpeted_tree is not None:
                 print(interpeted_tree)
     elif args.script:
         with open(args.script, "r") as f:
@@ -143,9 +147,10 @@ def main():
                 exit()
             if args.debug:
                 print("Here the parse tree for debug purposes: \n")
-                print(tree.pretty()) # print the parse tree
-            if interpeted_tree:
-                print(interpeted_tree)
+                print(tree.pretty())  # print the parse tree
+            for out in interpeted_tree:
+                if out is not None:
+                    print(out)
 
 if __name__ == '__main__':
     main()
