@@ -66,25 +66,40 @@ class TreeToJS(Transformer):
 
     def variable_assignment(self, args):
         if args[0] == '++':
-            symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': symbol_table.find(args[1])['value'] + 1, 'type': type(symbol_table.find(args[1])['value'] + 1)})
-            return symbol_table.find(args[1])['value']
+            if args[1] in [int, float]:
+                symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': symbol_table.find(args[1])['value'] + 1, 'type': type(symbol_table.find(args[1])['value'] + 1)})
+                return symbol_table.find(args[1])['value']
+            else:
+                symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': 'NaN', 'type': 'NaN'})
+                return symbol_table.find(args[1])['value']
         elif args[0] == '--':
-            symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': symbol_table.find(args[1])['value'] - 1, 'type': type(symbol_table.find(args[1])['value'] - 1)})
+            if args[1] in [int, float]:
+                symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': symbol_table.find(args[1])['value'] - 1, 'type': type(symbol_table.find(args[1])['value'] - 1)})
+            else:
+                symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': 'NaN', 'type': 'NaN'})
         elif args[1] == '+=':
-            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] + args[2], 'type': type(symbol_table.find(args[0])['value'] + args[2])})
+            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': self.add([symbol_table.find(args[0])['value'], args[2]]), 'type': type(self.add([symbol_table.find(args[0])['value'], args[2]]))})
         elif args[1] == '-=':
-            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] - args[2], 'type': type(symbol_table.find(args[0])['value'] - args[2])})
+            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': self.sub([symbol_table.find(args[0])['value'], args[2]]), 'type': type(self.sub([symbol_table.find(args[0])['value'], args[2]]))})
         elif args[1] == '*=':
-            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] * args[2], 'type': type(symbol_table.find(args[0])['value'] * args[2])})
+            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': self.mul([symbol_table.find(args[0])['value'], args[2]]), 'type': type(self.mul([symbol_table.find(args[0])['value'], args[2]]))})
         elif args[1] == '/=':
-            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] / args[2], 'type': type(symbol_table.find(args[0])['value'] / args[2])})
+            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': self.div([symbol_table.find(args[0])['value'], args[2]]), 'type': type(self.div([symbol_table.find(args[0])['value'], args[2]]))})
         elif args[1] == '++':
-            value = symbol_table.find(args[0])['value']
-            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] + 1, 'type': type(symbol_table.find(args[0])['value'] + 1)})
+            if args[0] in [int, float]:
+                value = symbol_table.find(args[0])['value']
+                symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] + 1, 'type': type(symbol_table.find(args[0])['value'] + 1)})
+            else:
+                value = 'NaN'
+                symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': 'NaN', 'type': 'NaN'})
             return value
         elif args[1] == '--':
-            value = symbol_table.find(args[0])['value']
-            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] - 1, 'type': type(symbol_table.find(args[0])['value'] - 1)})
+            if args[0] in [int, float]:
+                value = symbol_table.find(args[0])['value']
+                symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': symbol_table.find(args[0])['value'] - 1, 'type': type(symbol_table.find(args[0])['value'] - 1)})
+            else:
+                value = 'NaN'
+                symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': 'NaN', 'type': 'NaN'})
             return value
         return symbol_table.find(args[0])['value']
 
