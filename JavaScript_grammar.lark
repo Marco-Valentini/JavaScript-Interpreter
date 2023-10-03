@@ -90,8 +90,6 @@ factor : STRING
        | IDENTIFIER "[" expression "]" -> array_access
        | input_statement
        | array
-       | MULTILINE_COMMENT
-
 
 array: "[" [expression ("," expression)*] "]"
 
@@ -135,7 +133,7 @@ STRING: "'" _STRING_INNER* "'"
 // comment management (ignore them)
 MULTILINE_COMMENT: "/*" /.*/ "*/"
 INLINE_COMMENT: "//" /[^\n]*/
-
+NEWLINE: "\n"
 %import common.ESCAPED_STRING
 %import common._STRING_INNER
 %import common.CNAME -> IDENTIFIER
@@ -145,3 +143,5 @@ INLINE_COMMENT: "//" /[^\n]*/
 
 %ignore WS
 %ignore INLINE_COMMENT
+%ignore NEWLINE
+%ignore MULTILINE_COMMENT

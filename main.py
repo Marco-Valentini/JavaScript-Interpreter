@@ -2,12 +2,18 @@ from lark import Lark, UnexpectedInput
 from lark.exceptions import UnexpectedToken
 from Interpreter import JavaScriptInterpreter
 from error_handling import *
+from argparse import ArgumentParser # to provide Command Line Interface (CLI)
 
 # the grammar is contained in the file JavaScript_grammar.lark
 parser = Lark.open("JavaScript_grammar.lark", parser='lalr', debug=True)
 
 
 def parse(javascript_script):
+    """
+    Wrapper for the parser.parse method including error handling
+    :param javascript_script:
+    :return:
+    """
     try:
         tree = parser.parse(javascript_script)
     except UnexpectedInput as u:
@@ -49,12 +55,20 @@ def parse(javascript_script):
     else:
         return tree
 
-def main(script="javascript_tests/arithmetic_operations.js",console=False, verbose=True):
-    if script is None or console is True:
+def main():
+    argument_parser = ArgumentParser(description="JavaScript Interpreter", epilog="Enjoy the interpreter!")
+    argument_parser.add_argument("-s", "--script", help="JavaScript script to be interpreted", type=str)
+    argument_parser.add_argument("-c", "--console", help="Starts the interpreter in console mode", action="store_true")
+    argument_parser.add_argument("-d", "--debug", help="Prints the tree of the process for debug purposes",
+                                 action="store_true")
+
+    args = argument_parser.parse_args()
+
+    if args.console or args.script is None:  # if no script is provided, the interpreter starts in console mode
         while True:
             try:
                 console = input('JS>>> ')
-                if console == "":
+                if console == "" or console.startswith("//"):
                     continue
             except EOFError:
                 break
@@ -91,50 +105,52 @@ def main(script="javascript_tests/arithmetic_operations.js",console=False, verbo
             except IsNotAFunction as e:
                 print(e)
                 continue
-            if verbose:
-                print(interpeted_tree)
-    else:
-        with open(script, "r") as f:
-            for line in f:
-                try:
-                    if line == "\n":
-                        continue
-                    tree = parse(line)
-                except UnexpectedInput as u:
-                    print(f"Internal Lark error: parsing failed due to unexprected input\n" + u)  # gestisce anche lexical errors?
-                    exit()
-                except UnexpectedToken as e:
-                    print(f"Internal Lark error: parsing failed due to unexpected token\n" + e)
-                    exit()
-                except MissingClosingParenthesisInArgumentList as e:
-                    print(e)
-                    exit()
-                except MissingClosingParenthesisAfterCondition as e:
-                    print(e)
-                    exit()
-                except MissingClosingParenthesisAfterElementList as e:
-                    print(e)
-                    exit()
-                except MissingClosingParenthesisAfterFunctionBody as e:
-                    print(e)
-                    exit()
-                except MissingEqualInConstDeclaration as e:
-                    print(e)
-                    exit()
-                except UnexpectedEndOfInput as e:
-                    print(e)
-                    exit()
-                try:
-                    interpeted_tree = JavaScriptInterpreter().visit(tree)
-                except IsNotAFunction as e:
-                    print(e)
-                    exit()
-                if verbose:
-                    print(interpeted_tree)
+            if args.debug:
+                print("Here the parse tree for debug purposes: \n")
+                print(tree.pretty())
+            print(interpeted_tree)
+    elif args.script:
+        with open(args.script, "r") as f:
+            file = f.read()
+            try:
+                tree = parse(file)
+            except UnexpectedInput as u:
+                print(f"Internal Lark error: parsing failed due to unexprected input\n" + u)  # gestisce anche lexical errors?
+                exit()
+            except UnexpectedToken as e:
+                print(f"Internal Lark error: parsing failed due to unexpected token\n" + e)
+                exit()
+            except MissingClosingParenthesisInArgumentList as e:
+                print(e)
+                exit()
+            except MissingClosingParenthesisAfterCondition as e:
+                print(e)
+                exit()
+            except MissingClosingParenthesisAfterElementList as e:
+                print(e)
+                exit()
+            except MissingClosingParenthesisAfterFunctionBody as e:
+                print(e)
+                exit()
+            except MissingEqualInConstDeclaration as e:
+                print(e)
+                exit()
+            except UnexpectedEndOfInput as e:
+                print(e)
+                exit()
+            try:
+                interpeted_tree = JavaScriptInterpreter().visit(tree)
+            except IsNotAFunction as e:
+                print(e)
+                exit()
+            if args.debug:
+                print("Here the parse tree for debug purposes: \n")
+                print(tree.pretty()) # print the parse tree
+            print(interpeted_tree)
+
 
 
 if __name__ == '__main__':
     main()
 
-# TODO serve implementare una logica che prenda gli statement uno alla volta dai file e quindi
 
