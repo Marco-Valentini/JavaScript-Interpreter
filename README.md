@@ -12,13 +12,13 @@ JavaScript Error Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScr
 - String
 - Array
 
-### Arithmetic Operations (with type coercition simulation)
+### Arithmetic Operations (with type coercion simulation)
 - addition (+)
 - subtraction (-)
 - multiplication (*)
 - division (/)
 
-### Arithmetic Operations (with type coercition simulation)
+### Relational Operations (with type coercion simulation)
 - equal (==)
 - not equal (!=)
 - strict equal (===)
@@ -28,17 +28,17 @@ JavaScript Error Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScr
 - greater than or equal to (>=)
 - less than or equal to (<=)
 
-### Assignment operations
+### Assignment operations (with type coercion simulation)
 - identifier += expression
 - identifier -= expression
 - identifier *= expression
 - identifier /= expression
-- identifier ++
-- ++ identifier
-- identifier --
-- -- identifier
+- identifier ++  (post-increment)
+- ++ identifier  (pre-increment)
+- identifier --  (post-decrement)
+- -- identifier  (pre-decrement)
 
-### Logical operations (with type coercition simulation)
+### Logical operations (with type coercion simulation)
 - not (!)
 - or (||)
 - and (&&)
@@ -46,7 +46,7 @@ JavaScript Error Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScr
 ### Branching operations
 - if
 - if else
-- operatore condizionale ternario (condition ? true : false)
+- ternary conditional operator (condition ? true : false)
 
 ### Loop operations
 - while
@@ -59,22 +59,48 @@ JavaScript Error Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScr
 - template literals
 
 ### Function declaration
-- function ID (parameters) { body }
+- function IDENTIFIER (list_of_parameters) { body }
 
 ### Function call
-- ID (arguments)
+- IDENTIFIER (list_of_arguments)
 
 ### Array
 - array declaration
-- array access
+- array access (with integer index and non integer index)
 
 ### Comments (ignored)
 - single line comment (//)
 - multi line comment (/* */)
 
 ### Managed errors
-- lexical errors (typing errors)
-- syntax error
+- Lexical errors (typing error)
+- Syntax errors
     - non-matched parenthesis
-- semantic errors
-    - Reference error
+    - identifier already declared
+    - assignment to constant variable
+    - redeclaration with different declaration type
+    - reserved word used as identifier
+    - unexpected end of input
+    - missing equal sign in constant declaration
+    - 
+- Semantic errors
+    - reference error
+    - type error
+
+## Instructions to run the interpreter
+1. install python (our python version: 3.8)
+2. install lark library: `pip install lark` (our version: 1.1.7)
+### Script execution
+1. open a terminal
+2. go to the project folder
+3. run the script: `python main.py -s (--script) <path_to_script>`
+4. the output will be printed in the terminal
+### Console execution
+1. open a terminal
+2. go to the project folder
+3. run the script: `python main.py -c (--console)` or `python main.py`
+4. write the script in the console
+5. press enter
+6. the output will be printed in the terminal
+
+For both the execution modes, if you specify the flag `-d (--debug)` the debug mode will be activated and the Parse Tree will be printed in the terminal.
