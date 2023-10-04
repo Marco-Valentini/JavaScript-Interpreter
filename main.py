@@ -64,6 +64,8 @@ def main():
                                  action="store_true")
     # get the arguments from the command line instruction
     args = argument_parser.parse_args()
+    # args.script = "./javascript_tests/test_1.js"
+    # args.console = False
 
     if args.console or args.script is None:  # if no script is provided, the interpreter starts in console mode
         while True:
@@ -75,11 +77,11 @@ def main():
                 break
             try:
                 tree = parse(console)
-            except UnexpectedInput:
-                print(f"LexicalError: scanning failed due to unexpected input\n")
+            except UnexpectedInput as i:
+                print(f"LexicalError: scanning failed due to unexpected input at line {i.line} and column {i.column}\n")  # gestisce anche lexical errors?
                 continue
-            except UnexpectedToken:
-                print(f"LexicalError: scanning failed due to unexpected token\n")
+            except UnexpectedToken as t:
+                print(f"LexicalError: scanning failed due to unexpected token at line {t.line} and column {t.column}\n")
                 continue
             except MissingClosingParenthesisInArgumentList as e:
                 print(e)
@@ -114,15 +116,16 @@ def main():
             elif interpeted_tree is not None:
                 print(interpeted_tree)
     elif args.script:
+
         with open(args.script, "r") as f:
             file = f.read()
             try:
                 tree = parse(file)
-            except UnexpectedInput:
-                print(f"LexicalError: scanning failed due to unexpected input\n")
+            except UnexpectedInput as i:
+                print(f"LexicalError: scanning failed due to unexpected input at line {i.line} column {i.column}\n")  # gestisce anche lexical errors?
                 exit()
-            except UnexpectedToken:
-                print(f"LexicalError: scanning failed due to unexpected token\n")
+            except UnexpectedToken as t:
+                print(f"LexicalError: scanning failed due to unexpected token at line {t.line} column {t.column}\n")
                 exit()
             except MissingClosingParenthesisInArgumentList as e:
                 print(e)

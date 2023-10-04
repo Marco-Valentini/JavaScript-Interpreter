@@ -73,6 +73,21 @@ class TreeToJS(Transformer):
                     symbol_table.insert(args[1].value, {'declaration': args[0].value, 'value': args[3],
                                                         'type': type(args[3])})
                 return 'undefined'
+            elif len(args) == 6: # assignment to a cell of the array
+                if args[0].value in reserved_words:
+                    wrong_id = args[0].value
+                    raise ReservedWordAsIdentifier
+                if args[0].value in symbol_table.table.keys():
+                    arr = symbol_table.find(args[0].value)['value']
+                    if args[2] >= len(arr):
+                        # fill intermediate cells with undefined
+                        for i in range(len(arr), args[2]):
+                            arr.append('undefined')
+                        arr.append(args[5])
+                    else:
+                        arr[args[2]] = args[5] # update the value
+                symbol_table.update(args[0].value, {'declaration': symbol_table.find(args[0].value)['declaration'],
+                                                    'value': arr, 'type': type(arr)})
         except IdentifierAlreadyDeclared:
             print('SyntaxError: Identifier ' + args[1].value + ' has already been declared')
         except ConstAssignmentTypeError:
@@ -777,13 +792,15 @@ class TreeToJS(Transformer):
         elif args[0].type == 'BOOL':
             if args[0].value == 'true':
                 return True
-            else:
+            elif args[0].value == 'false':
                 return False
         elif args[0].type == 'IDENTIFIER':
             try:
                 return symbol_table.find(args[0].value)['value']
             except ReferenceError:
                 print('ReferenceError: ' + args[0].value + ' is not defined')
+        elif args[0].type == 'ARRAY':
+            return args[0]
 
     @staticmethod
     def term(args):

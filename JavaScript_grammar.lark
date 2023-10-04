@@ -68,8 +68,8 @@ print_statement: "console" "." "log" "(" expression? ")" ";"?
                 | "console" "." "log" "(" ternary_condition_statement ")" ";"?
 
 // the ! is required to not filter keywords like let/const/var
-!variable_statement: ("let"|"var") IDENTIFIER ("=" (expression|function_call|logical_statement|ternary_condition_statement))?
-                    |("let"|"var")? IDENTIFIER ("=" (expression|function_call|logical_statement|ternary_condition_statement))  // we can define but not assign a variable or vice versa
+!variable_statement: ("let"|"var") IDENTIFIER  ("=" (expression|function_call|logical_statement|ternary_condition_statement))?
+                    |("let"|"var")? IDENTIFIER ("[" expression "]")? ("=" (expression|function_call|logical_statement|ternary_condition_statement))  // we can define but not assign a variable or vice versa
                     |"const" IDENTIFIER "=" (expression|function_call|logical_statement|ternary_condition_statement)
 
 !variable_assignment: IDENTIFIER "+=" expression
@@ -91,11 +91,11 @@ term : multiplicative
      | "(" additive ")"
      | "(" term ")"
 
-factor : STRING
+factor : BOOL
+       | STRING
        | template_literal  // because it is just a more complex string
        | INT
        | FLOAT
-       | BOOL
        | IDENTIFIER
        | IDENTIFIER "[" expression "]" -> array_access
        | IDENTIFIER "." "length" -> array_length
@@ -119,7 +119,7 @@ array: "[" [expression ("," expression)*] "]"
 !return_statement: "return" expression? ";"?
 
 // branching production
-?if_statement : "if" "(" (logical_statement | expression) ")" block ("else" block)?  // this way we include all the possible cases, statement can be a block or another if statement
+?if_statement : "if" "(" (logical_statement | expression) ")" block ("else" (if_statement|block))?  // this way we include all the possible cases, statement can be a block or another if statement
 
 // iteration production
 ?while_statement  : "while" "(" (logical_statement | expression) ")" block
