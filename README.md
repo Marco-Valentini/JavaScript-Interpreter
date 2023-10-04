@@ -67,6 +67,7 @@ JavaScript Error Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScr
 ### Array
 - array declaration
 - array access (with integer index and non integer index)
+- array length (length)
 
 ### Comments (ignored)
 - single line comment (//)

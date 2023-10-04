@@ -68,9 +68,9 @@ print_statement: "console" "." "log" "(" expression? ")" ";"?
                 | "console" "." "log" "(" ternary_condition_statement ")" ";"?
 
 // the ! is required to not filter keywords like let/const/var
-!variable_statement: ("let"|"var") IDENTIFIER ("=" expression)?
-                    |("let"|"var")? IDENTIFIER ("=" expression)  // we can define but not assign a variable or vice versa
-                    |"const" IDENTIFIER "=" expression
+!variable_statement: ("let"|"var") IDENTIFIER ("=" (expression|function_call|logical_statement|ternary_condition_statement))?
+                    |("let"|"var")? IDENTIFIER ("=" (expression|function_call|logical_statement|ternary_condition_statement))  // we can define but not assign a variable or vice versa
+                    |"const" IDENTIFIER "=" (expression|function_call|logical_statement|ternary_condition_statement)
 
 !variable_assignment: IDENTIFIER "+=" expression
                     | IDENTIFIER "-=" expression
@@ -98,12 +98,13 @@ factor : STRING
        | BOOL
        | IDENTIFIER
        | IDENTIFIER "[" expression "]" -> array_access
+       | IDENTIFIER "." "length" -> array_length
        | input_statement
        | array
 
 array: "[" [expression ("," expression)*] "]"
 
-?template_literal: "`" (template_string_part | "${" expression "}")* "`"
+?template_literal: "`" (template_string_part | "${" (expression | logical_statement | ternary_condition_statement | function_call) "}")* "`"
 
 ?template_string_part: /[^$`]+/
 
@@ -132,7 +133,7 @@ STRING: "'" _STRING_INNER* "'"
         | "\"" _STRING_INNER* "\""
 
 // comment management (ignore them)
-MULTILINE_COMMENT: "/*" /.*/ "*/"
+MULTILINE_COMMENT: "/*" (/.*/ | "\n")* "*/"
 INLINE_COMMENT: "//" /[^\n]*/
 NEWLINE: "\n"
 

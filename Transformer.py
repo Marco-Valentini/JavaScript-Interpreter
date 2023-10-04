@@ -23,9 +23,17 @@ class TreeToJS(Transformer):
     @staticmethod
     def input_statement(args):
         if not args:
-            return input()  # when no input message is specified
+            x = input()  # when no input message is specified
         else:
-            return input(args[0])
+            x = input(args[0])
+        try:
+            x = int(x)
+        except ValueError:
+            try:
+                x = float(x)
+            except ValueError:
+                pass
+        return x
 
     @staticmethod
     def variable_statement(args):
@@ -64,7 +72,7 @@ class TreeToJS(Transformer):
                 else:
                     symbol_table.insert(args[1].value, {'declaration': args[0].value, 'value': args[3],
                                                         'type': type(args[3])})
-                return args[3]
+                return 'undefined'
         except IdentifierAlreadyDeclared:
             print('SyntaxError: Identifier ' + args[1].value + ' has already been declared')
         except ConstAssignmentTypeError:
@@ -185,7 +193,7 @@ class TreeToJS(Transformer):
                 else:
                     return 0 == args[1]
             else:
-                return True
+                return args[0] == args[1]
 
     @staticmethod
     def inequality(args):
@@ -224,7 +232,7 @@ class TreeToJS(Transformer):
                 else:
                     return 0 != args[1]
             else:
-                return True
+                return args[0] != args[1]
 
     @staticmethod
     def strict_equality(args):
@@ -745,7 +753,7 @@ class TreeToJS(Transformer):
     def template_literal(args):
         temp = ""
         for arg in args:
-            if type(arg) in [float, int, bool]:
+            if type(arg) in [float, int, bool, str]:
                 temp += str(arg) + " "
             else:
                 temp += str(arg)
@@ -758,7 +766,7 @@ class TreeToJS(Transformer):
         :param args:
         :return:
         """
-        if type(args[0]) in [str, list]:  # case of template literal or array
+        if type(args[0]) in [str, int, float, list]:  # case of template literal or array
             return args[0]
         elif args[0].type == 'FLOAT':
             return float(args[0].value)
@@ -797,4 +805,14 @@ class TreeToJS(Transformer):
         except TypeError:  # es float index
             return 'undefined'
         except ValueError:  # es string index
+            return 'undefined'
+
+    @staticmethod
+    def array_length(args):
+        try:
+            arr = symbol_table.find(args[0])['value']
+            return len(arr)
+        except TypeError:
+            return 'undefined'
+        except ValueError:
             return 'undefined'

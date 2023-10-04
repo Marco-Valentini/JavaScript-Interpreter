@@ -151,8 +151,11 @@ class JavaScriptInterpreter(Interpreter):
     def input_statement(tree):
         return js_transformer.transform(tree)
 
-    @staticmethod
-    def variable_statement(tree):
+    def variable_statement(self, tree):
+        for i in range(len(tree.children)):
+            if str(type(tree.children[i])) == "<class 'lark.tree.Tree'>":
+                if tree.children[i].data == 'function_call':
+                    tree.children[i] = self.visit(tree.children[i])
         return js_transformer.transform(tree)
 
     @staticmethod
@@ -245,4 +248,8 @@ class JavaScriptInterpreter(Interpreter):
 
     @staticmethod
     def array_access(tree):
+        return js_transformer.transform(tree)
+
+    @staticmethod
+    def array_length(tree):
         return js_transformer.transform(tree)
