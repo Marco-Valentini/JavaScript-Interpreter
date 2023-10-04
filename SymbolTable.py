@@ -1,8 +1,12 @@
-# The symbol table is organized as a dictionary, where the keys are the variable identifiers and the values are the attributes
+# The symbol table is organized as a dictionary,
+# where the keys are the variable identifiers and the values are the attributes
 from error_handling import *
 
+
 class SymbolTable:
-    def __init__(self, initial_state={}):
+    def __init__(self, initial_state=None):
+        if initial_state is None:
+            initial_state = {}
         self.table = initial_state
 
     def insert(self, identifier, attributes):

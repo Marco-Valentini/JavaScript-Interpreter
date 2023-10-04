@@ -61,7 +61,7 @@ input_statement: "prompt" "(" expression? ")" ";"?  # prompt can take whatever i
                 | "prompt" "(" function_call ")" ";"?
                 | "prompt" "(" ternary_condition_statement ")" ";"?
 
-?print_statement: "console" "." "log" "(" expression? ")" ";"?
+print_statement: "console" "." "log" "(" expression? ")" ";"?
                 | "console" "." "log" "(" variable_assignment ")" ";"?
                 | "console" "." "log" "(" logical_statement ")" ";"?
                 | "console" "." "log" "(" function_call ")" ";"?

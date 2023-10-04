@@ -82,7 +82,7 @@ JavaScript Error Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScr
     - reserved word used as identifier
     - unexpected end of input
     - missing equal sign in constant declaration
-    - 
+  
 - Semantic errors
     - reference error
     - type error

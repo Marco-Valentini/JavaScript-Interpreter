@@ -5,32 +5,37 @@
 
 from lark.visitors import Transformer
 from SymbolTable import symbol_table
-from error_handling import  *
+from error_handling import *
+
 
 class TreeToJS(Transformer):
     """
     This class extends Lark's transformer class, which provides a convenient interface to process the parse tree that
     Lark returns. Each method of the class corresponds to one of the rules in the grammar.
     """
-    def print_statement(self, args):
+    @staticmethod
+    def print_statement(args):
         if not args:
-            return 'undefined' # when no message is specified
+            print('undefined')  # when no message is specified
         else:
-            return args[0]
+            print(args[0])
 
-    def input_statement(self, args):
+    @staticmethod
+    def input_statement(args):
         if not args:
             return input()  # when no input message is specified
         else:
             return input(args[0])
 
-    def variable_statement(self, args):
+    @staticmethod
+    def variable_statement(args):
         try:
             if len(args) == 2:  # variable declaration (es. let a)
                 if args[1].value in reserved_words:
                     wrong_id = args[1].value
                     raise ReservedWordAsIdentifier
-                symbol_table.insert(args[1].value, {'declaration': args[0].value, 'value': 'undefined', 'type': 'undefined'})
+                symbol_table.insert(args[1].value, {'declaration': args[0].value, 'value': 'undefined',
+                                                    'type': 'undefined'})
                 return 'undefined'
             elif len(args) == 3:  # variable assignment (es. a = 2)
                 if args[0].value in reserved_words:
@@ -40,7 +45,9 @@ class TreeToJS(Transformer):
                     if symbol_table.find(args[0].value)['declaration'] == 'const':
                         raise ConstAssignmentTypeError
                     else:
-                        symbol_table.update(args[0].value, {'declaration': symbol_table.find(args[0].value)['declaration'], 'value': args[2], 'type': type(args[2])})
+                        symbol_table.update(args[0].value,
+                                            {'declaration': symbol_table.find(args[0].value)['declaration'],
+                                             'value': args[2], 'type': type(args[2])})
                 else:  # the variable has not been declared yet
                     symbol_table.insert(args[0].value, {'declaration': 'var', 'value': args[2], 'type': type(args[2])})
                 return args[2]
@@ -50,82 +57,99 @@ class TreeToJS(Transformer):
                     raise ReservedWordAsIdentifier
                 if args[1].value in symbol_table.table.keys():
                     if args[0].value == symbol_table.find(args[1].value)['declaration']:
-                        symbol_table.update(args[1].value, {'declaration': args[0].value, 'value': args[3], 'type': type(args[3])})
+                        symbol_table.update(args[1].value, {'declaration': args[0].value, 'value': args[3],
+                                                            'type': type(args[3])})
                     else:
                         raise IdentifierAlreadyDeclared
                 else:
-                    symbol_table.insert(args[1].value, {'declaration': args[0].value, 'value': args[3], 'type': type(args[3])})
+                    symbol_table.insert(args[1].value, {'declaration': args[0].value, 'value': args[3],
+                                                        'type': type(args[3])})
                 return args[3]
         except IdentifierAlreadyDeclared:
             print('SyntaxError: Identifier ' + args[1].value + ' has already been declared')
         except ConstAssignmentTypeError:
             print('TypeError: Assignment to constant variable')
         except ReservedWordAsIdentifier:
-            print('SyntaxError: Unexpected token '+ wrong_id)
-
+            print('SyntaxError: Unexpected token ' + wrong_id)
 
     def variable_assignment(self, args):
         if args[0] == '++':  # pre increment
             value = symbol_table.find(args[1])['value']
             if type(value) in [int, float]:
                 value += 1
-                symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': value, 'type': type(value)})
+                symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': value,
+                                              'type': type(value)})
             else:
                 value = 'NaN'
-                symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': 'NaN', 'type': 'NaN'})
+                symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': 'NaN',
+                                              'type': 'NaN'})
             return value
         elif args[0] == '--':  # pre decrement
             value = symbol_table.find(args[1])['value']
             if type(value) in [int, float]:
                 value -= 1
-                symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': value, 'type': type(value)})
+                symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': value,
+                                              'type': type(value)})
             else:
                 value = 'NaN'
-                symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': 'NaN', 'type': 'NaN'})
+                symbol_table.update(args[1], {'declaration': symbol_table.find(args[1])['declaration'], 'value': 'NaN',
+                                              'type': 'NaN'})
             return value
         elif args[1] == '+=':
             value = self.add([symbol_table.find(args[0])['value'], args[2]])
-            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': value, 'type': type(value)})
+            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': value,
+                                          'type': type(value)})
             return value
         elif args[1] == '-=':
             value = self.sub([symbol_table.find(args[0])['value'], args[2]])
-            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': value, 'type': type(value)})
+            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': value,
+                                          'type': type(value)})
             return value
         elif args[1] == '*=':
             value = self.mul([symbol_table.find(args[0])['value'], args[2]])
-            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': value, 'type': type(value)})
+            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': value,
+                                          'type': type(value)})
             return value
         elif args[1] == '/=':
             value = self.div([symbol_table.find(args[0])['value'], args[2]])
-            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': value, 'type': type(value)})
+            symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': value,
+                                          'type': type(value)})
             return value
         elif args[1] == '++':  # post increment
             value = symbol_table.find(args[0])['value']
             if type(value) in [int, float]:
-                symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': value + 1, 'type': type(value + 1)})
+                symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'],
+                                              'value': value + 1, 'type': type(value + 1)})
             else:
                 value = 'NaN'
-                symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': 'NaN', 'type': 'NaN'})
+                symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': 'NaN',
+                                              'type': 'NaN'})
             return value
         elif args[1] == '--':  # post decrement
             value = symbol_table.find(args[0])['value']
             if type(value) in [int, float]:
-                symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': value - 1, 'type': type(value - 1)})
+                symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'],
+                                              'value': value - 1, 'type': type(value - 1)})
             else:
                 value = 'NaN'
-                symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': 'NaN', 'type': 'NaN'})
+                symbol_table.update(args[0], {'declaration': symbol_table.find(args[0])['declaration'], 'value': 'NaN',
+                                              'type': 'NaN'})
             return value
 
-    def return_statement(self, args):
+    @staticmethod
+    def return_statement(args):
         return args[1]
 
-    def logical_and(self, args):
+    @staticmethod
+    def logical_and(args):
         return args[0] and args[1]
 
-    def logical_or(self, args):
+    @staticmethod
+    def logical_or(args):
         return args[0] or args[1]
 
-    def equality(self, args):
+    @staticmethod
+    def equality(args):
         """
         This method is used to check if two values are equal. It simulates the JavaScript type coercion
         :param args:
@@ -163,7 +187,8 @@ class TreeToJS(Transformer):
             else:
                 return True
 
-    def inequality(self, args):
+    @staticmethod
+    def inequality(args):
         """
         This method is used to check if two values are not equal. It simulates the JavaScript type coercition
         :param args:
@@ -201,7 +226,8 @@ class TreeToJS(Transformer):
             else:
                 return True
 
-    def strict_equality(self, args):
+    @staticmethod
+    def strict_equality(args):
         """
         This method is used to check if two values are equal. It is the === JavaScript operator,
         so does not simulate the JavaScript type coercition
@@ -210,7 +236,8 @@ class TreeToJS(Transformer):
         """
         return args[0] == args[1]
 
-    def strict_inequality(self, args):
+    @staticmethod
+    def strict_inequality(args):
         """
         This method is used to check if two values are not equal. It is the !== JavaScript operator,
         so does not simulate the JavaScript type coercition
@@ -219,10 +246,12 @@ class TreeToJS(Transformer):
         """
         return args[0] != args[1]
 
-    def array(self, args):
+    @staticmethod
+    def array(args):
         return args
 
-    def greater_than(self, args):
+    @staticmethod
+    def greater_than(args):
         """
         This method is used to check if the first value is greater than the second one. It simulates the JavaScript type coercition
         :param args:
@@ -260,7 +289,8 @@ class TreeToJS(Transformer):
             else:
                 return False
 
-    def greater_than_or_equal(self, args):
+    @staticmethod
+    def greater_than_or_equal(args):
         """
         This method is used to check if the first value is greater than or equal to the second one. It simulates the JavaScript type coercition
         :param args:
@@ -298,7 +328,8 @@ class TreeToJS(Transformer):
             else:
                 return False
 
-    def less_than(self, args):
+    @staticmethod
+    def less_than(args):
         """
         This method is used to check if the first value is less than the second one. It simulates the JavaScript type coercition
         :param args:
@@ -336,7 +367,8 @@ class TreeToJS(Transformer):
             else:
                 return False
 
-    def less_than_or_equal(self, args):
+    @staticmethod
+    def less_than_or_equal(args):
         """
         This method is used to check if the first value is less than or equal to the second one. It simulates the JavaScript type coercition
         :param args:
@@ -374,7 +406,8 @@ class TreeToJS(Transformer):
             else:
                 return False
 
-    def add(self, args):
+    @staticmethod
+    def add(args):
         """
         This method is used to add two values. It simulates the JavaScript type coercition
         :param args:
@@ -400,7 +433,8 @@ class TreeToJS(Transformer):
             else:
                 return 'NaN'
 
-    def sub(self, args):
+    @staticmethod
+    def sub(args):
         """
         This method is used to subtract two values. It simulates the JavaScript type coercition
         :param args:
@@ -486,7 +520,8 @@ class TreeToJS(Transformer):
             else:
                 return 'NaN'
 
-    def mul(self, args):
+    @staticmethod
+    def mul(args):
         """
         This method is used to multiply two values. It simulates the JavaScript type coercition
         :param args:
@@ -572,7 +607,8 @@ class TreeToJS(Transformer):
             else:
                 return 'NaN'
 
-    def div(self, args):
+    @staticmethod
+    def div(args):
         """
         This method is used to divide two values. It simulates the JavaScript type coercition
         :param args:
@@ -658,7 +694,8 @@ class TreeToJS(Transformer):
             else:
                 return 'NaN'
 
-    def negative(self, args):
+    @staticmethod
+    def negative(args):
         """
         This method is used to negate a value. It simulates the JavaScript type coercition
         :param args:
@@ -682,7 +719,8 @@ class TreeToJS(Transformer):
         else:
             return 'NaN'
 
-    def logical_not(self, args):
+    @staticmethod
+    def logical_not(args):
         """
         This method is used to negate a boolean value. It simulates the JavaScript type coercition
         :param args:
@@ -703,7 +741,8 @@ class TreeToJS(Transformer):
         else:
             return False
 
-    def template_literal(self, args):
+    @staticmethod
+    def template_literal(args):
         temp = ""
         for arg in args:
             if type(arg) in [float, int, bool]:
@@ -712,7 +751,8 @@ class TreeToJS(Transformer):
                 temp += str(arg)
         return temp
 
-    def factor(self, args):
+    @staticmethod
+    def factor(args):
         """
         Substitute the value in the explored nodes
         :param args:
@@ -737,13 +777,16 @@ class TreeToJS(Transformer):
             except ReferenceError:
                 print('ReferenceError: ' + args[0].value + ' is not defined')
 
-    def term(self, args):
+    @staticmethod
+    def term(args):
         return args[0]
 
-    def expression(self, args):
+    @staticmethod
+    def expression(args):
         return args[0]
 
-    def array_access(self, args):
+    @staticmethod
+    def array_access(args):
         try:
             if type(args[1]) == str:
                 args[1] = int(args[1])
@@ -753,5 +796,5 @@ class TreeToJS(Transformer):
             return 'undefined'
         except TypeError:  # es float index
             return 'undefined'
-        except ValueError: # es string index
+        except ValueError:  # es string index
             return 'undefined'

@@ -2,10 +2,11 @@ from lark import Lark, UnexpectedInput
 from lark.exceptions import UnexpectedToken
 from Interpreter import JavaScriptInterpreter
 from error_handling import *
-from argparse import ArgumentParser # to provide Command Line Interface (CLI)
+from argparse import ArgumentParser  # to provide Command Line Interface (CLI)
 
 # the grammar is contained in the file JavaScript_grammar.lark
 parser = Lark.open("JavaScript_grammar.lark", parser='lalr', debug=True)
+
 
 def parse(javascript_script):
     """
@@ -54,6 +55,7 @@ def parse(javascript_script):
     else:
         return tree
 
+
 def main():
     argument_parser = ArgumentParser(description="JavaScript Interpreter", epilog="Enjoy the interpreter!")
     argument_parser.add_argument("-s", "--script", help="JavaScript script to be interpreted", type=str)
@@ -66,7 +68,7 @@ def main():
     if args.console or args.script is None:  # if no script is provided, the interpreter starts in console mode
         while True:
             try:
-                console = input('Enter JavaScript code>> ')
+                console = input('JS> ')
                 if console == "" or console.startswith("//"):
                     continue
             except EOFError:
@@ -74,7 +76,7 @@ def main():
             try:
                 tree = parse(console)
             except UnexpectedInput:
-                print(f"LexicalError: scanning failed due to unexpected input\n")  # gestisce anche lexical errors?
+                print(f"LexicalError: scanning failed due to unexpected input\n")
                 continue
             except UnexpectedToken:
                 print(f"LexicalError: scanning failed due to unexpected token\n")
@@ -117,7 +119,7 @@ def main():
             try:
                 tree = parse(file)
             except UnexpectedInput:
-                print(f"LexicalError: scanning failed due to unexpected input\n")  # gestisce anche lexical errors?
+                print(f"LexicalError: scanning failed due to unexpected input\n")
                 exit()
             except UnexpectedToken:
                 print(f"LexicalError: scanning failed due to unexpected token\n")
@@ -141,16 +143,14 @@ def main():
                 print(e)
                 exit()
             try:
-                interpeted_tree = JavaScriptInterpreter().visit(tree)
+                JavaScriptInterpreter().visit(tree)
             except IsNotAFunction as e:
                 print(e)
                 exit()
             if args.debug:
                 print("Here the parse tree for debug purposes: \n")
                 print(tree.pretty())  # print the parse tree
-            for out in interpeted_tree:
-                if out is not None:
-                    print(out)
+
 
 if __name__ == '__main__':
     main()

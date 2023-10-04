@@ -5,7 +5,6 @@
 from copy import deepcopy
 
 # Interpreter allows to implement branching, loops and functions
-
 from lark.visitors import Interpreter
 from Transformer import TreeToJS
 from SymbolTable import symbol_table
@@ -13,6 +12,7 @@ from error_handling import *
 
 # the transformer is used to visit the tree from the leaves to the root (bottom-up)
 js_transformer = TreeToJS()
+
 
 class JavaScriptInterpreter(Interpreter):
 
@@ -23,13 +23,13 @@ class JavaScriptInterpreter(Interpreter):
         condition = js_transformer.transform(tree.children[0])
         if condition not in ['undefined', 'null', 'NaN', False, 0, ""]:  # JavaScript falsy values
             true_branch = self.visit(tree.children[1])  # visit the true branch
-            if true_branch == []:
+            if not true_branch:
                 return 'undefined'
             else:
                 return true_branch
         elif len(tree.children) == 3:  # if there is else branch
             false_branch = self.visit(tree.children[2])  # visit the false branch
-            if false_branch == []:
+            if not false_branch:
                 return 'undefined'
             else:
                 return false_branch
@@ -59,7 +59,8 @@ class JavaScriptInterpreter(Interpreter):
             else:
                 return false_branch
 
-    def function_declaration(self, tree):
+    @staticmethod
+    def function_declaration(tree):
         try:
             declaration = tree.children[0]
             identifier = tree.children[1]
@@ -138,83 +139,110 @@ class JavaScriptInterpreter(Interpreter):
         except ReferenceError:
             print('ReferenceError: ' + identifier + ' is not defined')
 
-    def return_statement(self, tree):
+    @staticmethod
+    def return_statement(tree):
         return js_transformer.transform(tree)
 
-    def print_statement(self, tree):
+    @staticmethod
+    def print_statement(tree):
         return js_transformer.transform(tree)
 
-    def input_statement(self, tree):
+    @staticmethod
+    def input_statement(tree):
         return js_transformer.transform(tree)
 
-    def variable_statement(self, tree):
+    @staticmethod
+    def variable_statement(tree):
         return js_transformer.transform(tree)
 
-    def variable_assignment(self, tree):
+    @staticmethod
+    def variable_assignment(tree):
         return js_transformer.transform(tree)
 
-    def logical_and(self, tree):
+    @staticmethod
+    def logical_and(tree):
         return js_transformer.transform(tree)
 
-    def logical_or(self, tree):
+    @staticmethod
+    def logical_or(tree):
         return js_transformer.transform(tree)
 
-    def equality(self, tree):
+    @staticmethod
+    def equality(tree):
         return js_transformer.transform(tree)
 
-    def inequality(self, tree):
+    @staticmethod
+    def inequality(tree):
         return js_transformer.transform(tree)
 
-    def strict_equality(self, tree):
+    @staticmethod
+    def strict_equality(tree):
         return js_transformer.transform(tree)
 
-    def strict_inequality(self, tree):
+    @staticmethod
+    def strict_inequality(tree):
         return js_transformer.transform(tree)
 
-    def greater_than(self, tree):
+    @staticmethod
+    def greater_than(tree):
         return js_transformer.transform(tree)
 
-    def greater_than_or_equal(self, tree):
+    @staticmethod
+    def greater_than_or_equal(tree):
         return js_transformer.transform(tree)
 
-    def less_than(self, tree):
+    @staticmethod
+    def less_than(tree):
         return js_transformer.transform(tree)
 
-    def less_than_or_equal(self, tree):
+    @staticmethod
+    def less_than_or_equal(tree):
         return js_transformer.transform(tree)
 
-    def add(self, tree):
+    @staticmethod
+    def add(tree):
         return js_transformer.transform(tree)
 
-    def sub(self, tree):
+    @staticmethod
+    def sub(tree):
         return js_transformer.transform(tree)
 
-    def mul(self, tree):
+    @staticmethod
+    def mul(tree):
         return js_transformer.transform(tree)
 
-    def div(self, tree):
+    @staticmethod
+    def div(tree):
         return js_transformer.transform(tree)
 
-    def negative(self, tree):
+    @staticmethod
+    def negative(tree):
         return js_transformer.transform(tree)
 
-    def logical_not(self, tree):
+    @staticmethod
+    def logical_not(tree):
         return js_transformer.transform(tree)
 
-    def template_literal(self, tree):
+    @staticmethod
+    def template_literal(tree):
         return js_transformer.transform(tree)
 
-    def factor(self, tree):
+    @staticmethod
+    def factor(tree):
         return js_transformer.transform(tree)
 
-    def term(self, tree):
+    @staticmethod
+    def term(tree):
         return js_transformer.transform(tree)
 
-    def expression(self, tree):
+    @staticmethod
+    def expression(tree):
         return js_transformer.transform(tree)
 
-    def array(self, tree):
+    @staticmethod
+    def array(tree):
         return js_transformer.transform(tree)
 
-    def array_access(self, tree):
+    @staticmethod
+    def array_access(tree):
         return js_transformer.transform(tree)
