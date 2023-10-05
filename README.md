@@ -88,9 +88,20 @@ JavaScript Error Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScr
     - reference error
     - type error
 
+### Tests (folder javascript_tests)
+The following test scripts are available:
+- `test_1.js`: test the arithmetic and the relational operations and the type coercion.
+- `test_2.js`: test the function declaration and the function call and the array declaration, access and length.
+- `test_3.js`: test the branching operations (if, if else) and the loop operations (while) and array declaration, access and length.
+- `test_4.js`: generate a lexical errors.
+- `test_5.js`: generate a syntax errors.
+- `test_6.js`: generate a semantic error.
+- `test_7.js`: generate a type error.
+
 ## Instructions to run the interpreter
-1. install python (our python version: 3.8)
-2. install lark library: `pip install lark` (our version: 1.1.7)
+1. clone the repository or download the project
+2. install python (our python version: 3.8)
+3. install lark library: `pip install lark` (our version: 1.1.7)
 ### Script execution
 1. open a terminal
 2. go to the project folder
