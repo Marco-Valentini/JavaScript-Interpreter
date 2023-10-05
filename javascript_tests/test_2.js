@@ -18,6 +18,9 @@ function divide(a, b) {
     return a/b;
 }
 
+/* this is a
+multiline comment */
+
 let add_a_b = add(a, b);
 let subtract_a_b = subtract(a, b);
 let multiply_a_b = multiply(a, b);
@@ -53,4 +56,4 @@ console.log(`local variable b =  ${array[1]} (note that it is different from the
 console.log(`local variable c =  ${array[2]}  (note that it is the same as the global variable c)`)
 console.log(`local variable d =  ${array[3]}`)
 console.log(`local variable e =  ${array[4]}`)
-console.log(`if you try to access an element of the array that is not defined, you get undefined: ${array[5]}`)
+console.log(`if you try to access an element of the array that is not defined, you get undefined: array[5] = ${array[5]}`)
