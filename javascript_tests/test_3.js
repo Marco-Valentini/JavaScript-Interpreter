@@ -42,7 +42,7 @@ while (continue_condition === true) {
 // print the array
 console.log(`The marks inserted are ${marks}`)
 console.log(`The number of marks inserted is ${marks.length}`)
-console.log("computing sufficient and unsufficient marks with a function")
+console.log("Computing the number of sufficient and unsufficient marks with a function")
 
 function count_sufficient_marks(marks) {
     n_marks = marks.length
