@@ -64,14 +64,14 @@ def main():
                                  action="store_true")
     # get the arguments from the command line instruction
     args = argument_parser.parse_args()
-    # args.script = "./javascript_tests/test_1.js"
+    # args.script = "./javascript_tests/test_2.js"
     # args.console = False
 
     if args.console or args.script is None:  # if no script is provided, the interpreter starts in console mode
         while True:
             try:
                 console = input('JS> ')
-                if console == "" or console.startswith("//"):
+                if console == "" or console.startswith("//") or (console.startswith("/*") and console.endswith("*/")):
                     continue
             except EOFError:
                 break

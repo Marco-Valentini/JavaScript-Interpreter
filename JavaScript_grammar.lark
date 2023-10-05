@@ -133,7 +133,7 @@ STRING: "'" _STRING_INNER* "'"
         | "\"" _STRING_INNER* "\""
 
 // comment management (ignore them)
-MULTILINE_COMMENT: "/*" (/.*/ | "\n")* "*/"
+MULTILINE_COMMENT: "/*" (/./ | "\n")* "*/"
 INLINE_COMMENT: "//" /[^\n]*/
 NEWLINE: "\n"
 
