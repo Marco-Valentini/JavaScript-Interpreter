@@ -25,12 +25,16 @@ class JavaScriptInterpreter(Interpreter):
             true_branch = self.visit(tree.children[1])  # visit the true branch
             if not true_branch:
                 return 'undefined'
+            elif type(true_branch) == list:
+                return true_branch[-1]
             else:
                 return true_branch
         elif len(tree.children) == 3:  # if there is else branch
             false_branch = self.visit(tree.children[2])  # visit the false branch
             if not false_branch:
                 return 'undefined'
+            elif type(false_branch) == list:
+                return false_branch[-1]
             else:
                 return false_branch
 

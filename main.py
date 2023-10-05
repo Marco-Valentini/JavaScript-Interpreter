@@ -18,16 +18,20 @@ def parse(javascript_script):
         tree = parser.parse(javascript_script)
     except UnexpectedInput as u:
         exc_class = u.match_examples(parser.parse, {
-            MissingClosingParenthesisInArgumentList: ['(fo',
-                                                      '(foo, fo',
-                                                      '(fooo, foo, fo'],
             MissingClosingParenthesisAfterCondition: ['if (a == b',
+                                                      'if (a == b { return foo }',
                                                       'if (a > b',
+                                                      'if (a > b { return foo }',
                                                       'if (a < b',
+                                                      'if (a < b { return foo }',
                                                       'if (a',
+                                                      'if (a { return foo }',
                                                       'if (true',
+                                                      'if (true { return foo }',
                                                       'if (false',
+                                                      'if (false { return foo }',
                                                       'if (a == b && c != d',
+                                                      'if (a == b && c != d { return foo }', # it could be possible to manage more errors by giving more examples
                                                       'while (a == b',
                                                       'while (a > b',
                                                       'while (a < b',
@@ -39,9 +43,10 @@ def parse(javascript_script):
             MissingClosingParenthesisAfterElementList: ['[fo',
                                                         '[foo, fo',
                                                         '[fooo, foo, fo',
-                                                        'let a = [fo',
-                                                        'let a = [foo, fo',
-                                                        'let a = [fooo, foo, fo'],
+                                                        '[fooo, foo, fo,',
+                                                        '[foo, fo,',
+                                                        '[fo,'
+                                                        ],
             MissingClosingParenthesisAfterFunctionBody: ['function foo() {',
                                                          'function foo() { return 1',
                                                          'function foo() { return 1 + 2',
@@ -50,7 +55,33 @@ def parse(javascript_script):
                                              'const foo',
                                              'const foo;'],
             UnexpectedEndOfInput: ['const foo =',
-                                   'foo(']
+                                   'foo(',
+                                   'function foo(',
+                                   'function foo(fo',
+                                   'function foo(fo,',
+                                   'function foo(foo, fo',
+                                   'function foo(foo, fo,',
+                                   'function foo(fooo, foo, fo',
+                                   'function foo(fooo, foo, fo,',
+                                   'let a = [fo',
+                                   'let a = [foo, fo',
+                                   'let a = [fooo, foo, fo',
+                                   'let a = [fo,',
+                                   'let a = [foo, fo,',
+                                   'let a = [fooo, foo, fo,',
+                                   'const a = [fo',
+                                   'const a = [foo, fo',
+                                   'const a = [fooo, foo, fo',
+                                   'const a = [fo,',
+                                   'const a = [foo, fo,',
+                                   'const a = [fooo, foo, fo,',
+                                   'var a = [fo',
+                                   'var a = [foo, fo',
+                                   'var a = [fooo, foo, fo',
+                                   'var a = [fo,',
+                                   'var a = [foo, fo,',
+                                   'var a = [fooo, foo, fo,'
+                                   ]
         }, use_accepts=True)  # True because it is recommended by Lark documentation
         if not exc_class:
             raise
@@ -86,9 +117,6 @@ def main():
             except UnexpectedToken as t:
                 print(f"LexicalError: scanning failed due to unexpected token at line {t.line} and column {t.column}\n")
                 continue
-            except MissingClosingParenthesisInArgumentList as e:
-                print(e)
-                continue
             except MissingClosingParenthesisAfterCondition as e:
                 print(e)
                 continue
@@ -112,11 +140,7 @@ def main():
             if args.debug:
                 print("Here the parse tree for debug purposes: \n")
                 print(tree.pretty())
-            if type(interpeted_tree) == list:
-                for out in interpeted_tree:
-                    if out is not None:
-                        print(out)
-            elif interpeted_tree is not None:
+            if interpeted_tree is not None:
                 print(interpeted_tree)
     elif args.script:
 
@@ -129,9 +153,6 @@ def main():
                 exit()
             except UnexpectedToken as t:
                 print(f"LexicalError: scanning failed due to unexpected token at line {t.line} column {t.column}\n")
-                exit()
-            except MissingClosingParenthesisInArgumentList as e:
-                print(e)
                 exit()
             except MissingClosingParenthesisAfterCondition as e:
                 print(e)

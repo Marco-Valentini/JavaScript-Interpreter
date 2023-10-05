@@ -796,7 +796,10 @@ class TreeToJS(Transformer):
                 return False
         elif args[0].type == 'IDENTIFIER':
             try:
-                return symbol_table.find(args[0].value)['value']
+                if symbol_table.find(args[0].value)['declaration'] == 'function':
+                    return f"function {args[0].value}"
+                else:
+                    return symbol_table.find(args[0].value)['value']
             except ReferenceError:
                 print('ReferenceError: ' + args[0].value + ' is not defined')
         elif args[0].type == 'ARRAY':

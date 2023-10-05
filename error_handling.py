@@ -16,10 +16,6 @@ class UnmatchedParenthesisError(JavaScriptSyntaxError):
     pass
 
 
-class MissingClosingParenthesisInArgumentList(UnmatchedParenthesisError):
-    label = 'Syntax Error: Missing ) in argument list'
-
-
 class MissingClosingParenthesisAfterCondition(UnmatchedParenthesisError):
     label = 'Syntax Error: Missing ) after condition'
 
