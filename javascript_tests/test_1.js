@@ -49,3 +49,8 @@ console.log(`y != b is equal to ${y != b}`);  // false
 console.log("Testing the strict equality operators:")
 console.log(`x === a is equal to ${x === a}`);  // false
 console.log(`y !== b is equal to ${y !== b}`);  // true
+
+// showing how the ternary operator works in javascript
+z = prompt("Enter a number: ");
+console.log("Testing the ternary operator:")
+(z > y) ? console.log("input number is greater than 5") : console.log("input number is less than or equal to 5");
