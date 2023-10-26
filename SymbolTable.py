@@ -29,7 +29,7 @@ class SymbolTable:
 
     def find(self, identifier):
         """
-        Retieves the attributes of the required identifier
+        Retrieves the attributes of the required identifier
         :param identifier:
         :return:
         """

@@ -42,9 +42,14 @@ class TreeToJS(Transformer):
                 if args[1].value in reserved_words:
                     wrong_id = args[1].value
                     raise ReservedWordAsIdentifier
-                symbol_table.insert(args[1].value, {'declaration': args[0].value, 'value': 'undefined',
-                                                    'type': 'undefined'})
+                if args[1].value in symbol_table.table.keys() and \
+                        symbol_table.find(args[1].value)['declaration'] == 'let':
+                    raise IdentifierAlreadyDeclared
+                else:
+                    symbol_table.insert(args[1].value, {'declaration': args[0].value, 'value': 'undefined',
+                                                        'type': 'undefined'})
                 return 'undefined'
+
             elif len(args) == 3:  # variable assignment (es. a = 2)
                 if args[0].value in reserved_words:
                     wrong_id = args[0].value
@@ -59,12 +64,13 @@ class TreeToJS(Transformer):
                 else:  # the variable has not been declared yet
                     symbol_table.insert(args[0].value, {'declaration': 'var', 'value': args[2], 'type': type(args[2])})
                 return args[2]
+
             elif len(args) == 4:  # variable declaration and assignment (es. let a = 2)
                 if args[1].value in reserved_words:
                     wrong_id = args[1].value
                     raise ReservedWordAsIdentifier
                 if args[1].value in symbol_table.table.keys():
-                    if args[0].value == symbol_table.find(args[1].value)['declaration']:
+                    if symbol_table.find(args[1].value)['declaration'] == 'var':
                         symbol_table.update(args[1].value, {'declaration': args[0].value, 'value': args[3],
                                                             'type': type(args[3])})
                     else:
@@ -73,7 +79,8 @@ class TreeToJS(Transformer):
                     symbol_table.insert(args[1].value, {'declaration': args[0].value, 'value': args[3],
                                                         'type': type(args[3])})
                 return 'undefined'
-            elif len(args) == 6: # assignment to a cell of the array
+
+            elif len(args) == 6:  # assignment to a cell of the array
                 if args[0].value in reserved_words:
                     wrong_id = args[0].value
                     raise ReservedWordAsIdentifier
