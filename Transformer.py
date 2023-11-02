@@ -87,12 +87,12 @@ class TreeToJS(Transformer):
                 if args[0].value in symbol_table.table.keys():
                     arr = symbol_table.find(args[0].value)['value']
                     if args[2] >= len(arr):
-                        # fill intermediate cells with undefined
+                        # pad intermediate cells with undefined
                         for i in range(len(arr), args[2]):
                             arr.append('undefined')
                         arr.append(args[5])
                     else:
-                        arr[args[2]] = args[5] # update the value
+                        arr[args[2]] = args[5]  # update the value
                 symbol_table.update(args[0].value, {'declaration': symbol_table.find(args[0].value)['declaration'],
                                                     'value': arr, 'type': type(arr)})
         except IdentifierAlreadyDeclared:
@@ -784,7 +784,7 @@ class TreeToJS(Transformer):
     @staticmethod
     def factor(args):
         """
-        Substitute the value in the explored nodes
+        This method is used to substitute the nodes of the parse tree passed in the args parameter with computed the value.
         :param args:
         :return:
         """
@@ -838,7 +838,12 @@ class TreeToJS(Transformer):
     def array_length(args):
         try:
             arr = symbol_table.find(args[0])['value']
-            return len(arr)
+            if type(arr) == list:
+                return len(arr)
+            elif type(arr) == str:
+                if arr == 'NaN':
+                    return 'undefined'
+                return len(arr)
         except TypeError:
             return 'undefined'
         except ValueError:

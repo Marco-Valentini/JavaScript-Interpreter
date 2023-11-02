@@ -13,6 +13,7 @@ from error_handling import *
 # the transformer is used to visit the tree from the leaves to the root (bottom-up)
 js_transformer = TreeToJS()
 
+js_falsy_values = ['undefined', 'null', 'NaN', False, 0, "", "0"]
 
 class JavaScriptInterpreter(Interpreter):
 
@@ -21,7 +22,7 @@ class JavaScriptInterpreter(Interpreter):
 
     def if_statement(self, tree):
         condition = js_transformer.transform(tree.children[0])
-        if condition not in ['undefined', 'null', 'NaN', False, 0, ""]:  # JavaScript falsy values
+        if condition not in js_falsy_values:  # JavaScript falsy values
             true_branch = self.visit(tree.children[1])  # visit the true branch
             if not true_branch:
                 return 'undefined'
@@ -40,7 +41,7 @@ class JavaScriptInterpreter(Interpreter):
 
     def while_statement(self, tree):
         condition = js_transformer.transform(tree.children[0])
-        while condition not in ['undefined', 'null', 'NaN', False, 0, ""]:
+        while condition not in js_falsy_values:  # JavaScript falsy values
             val = self.visit(tree.children[1])
             condition = js_transformer.transform(tree.children[0])
         if type(val) == list:
@@ -50,7 +51,7 @@ class JavaScriptInterpreter(Interpreter):
 
     def ternary_condition_statement(self, tree):
         condition = js_transformer.transform(tree.children[0])
-        if condition not in ['undefined', 'null', 'NaN', False, 0, ""]:
+        if condition not in js_falsy_values:
             true_branch = self.visit(tree.children[1])
             if type(true_branch) == list:
                 raise Exception('SyntaxError: Unexpected token')

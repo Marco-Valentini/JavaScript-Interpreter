@@ -4,8 +4,16 @@ from Interpreter import JavaScriptInterpreter
 from error_handling import *
 from argparse import ArgumentParser  # to provide Command Line Interface (CLI)
 
+import os
+
+# Get the path to the 'JavaScript_grammar.lark' file relative to the script location
+script_dir = os.path.dirname(os.path.realpath(__file__))
+grammar_file_path = os.path.join(script_dir, "JavaScript_grammar.lark")
+
+# Now you can use grammar_file_path to access the grammar file
+
 # the grammar is contained in the file JavaScript_grammar.lark
-parser = Lark.open("JavaScript_grammar.lark", parser='lalr', debug=True)
+parser = Lark.open(grammar_file_path, parser='lalr', debug=True)
 
 
 def parse(javascript_script):
@@ -112,7 +120,7 @@ def main():
             try:
                 tree = parse(console)
             except UnexpectedInput as i:
-                print(f"LexicalError: scanning failed due to unexpected input at line {i.line} and column {i.column}\n")  # gestisce anche lexical errors?
+                print(f"LexicalError: scanning failed due to unexpected input at line {i.line} and column {i.column}\n")
                 continue
             except UnexpectedToken as t:
                 print(f"LexicalError: scanning failed due to unexpected token at line {t.line} and column {t.column}\n")
@@ -149,7 +157,7 @@ def main():
             try:
                 tree = parse(file)
             except UnexpectedInput as i:
-                print(f"LexicalError: scanning failed due to unexpected input at line {i.line} column {i.column}\n")  # gestisce anche lexical errors?
+                print(f"LexicalError: scanning failed due to unexpected input at line {i.line} column {i.column}\n")
                 exit()
             except UnexpectedToken as t:
                 print(f"LexicalError: scanning failed due to unexpected token at line {t.line} column {t.column}\n")
