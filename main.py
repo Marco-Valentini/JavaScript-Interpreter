@@ -39,7 +39,7 @@ def parse(javascript_script):
                                                       'if (false',
                                                       'if (false { return foo }',
                                                       'if (a == b && c != d',
-                                                      'if (a == b && c != d { return foo }', # it could be possible to manage more errors by giving more examples
+                                                      'if (a == b && c != d { return foo }',
                                                       'while (a == b',
                                                       'while (a > b',
                                                       'while (a < b',
@@ -101,13 +101,12 @@ def parse(javascript_script):
 def main():
     argument_parser = ArgumentParser(description="JavaScript Interpreter", epilog="Enjoy the interpreter!")
     argument_parser.add_argument("-s", "--script", help="JavaScript script to be interpreted", type=str)
-    argument_parser.add_argument("-c", "--console", help="Starts the interpreter in console mode", action="store_true")
+    argument_parser.add_argument("-c", "--console", help="Starts the interpreter in console mode",
+                                 action="store_true")
     argument_parser.add_argument("-d", "--debug", help="Prints the tree of the process for debug purposes",
                                  action="store_true")
     # get the arguments from the command line instruction
     args = argument_parser.parse_args()
-    # args.script = "./javascript_tests/test_2.js"
-    # args.console = False
 
     if args.console or args.script is None:  # if no script is provided, the interpreter starts in console mode
         while True:
@@ -141,15 +140,15 @@ def main():
                 print(e)
                 continue
             try:
-                interpeted_tree = JavaScriptInterpreter().visit(tree)
+                interpreted_tree = JavaScriptInterpreter().visit(tree)
             except IsNotAFunction as e:
                 print(e)
                 continue
             if args.debug:
                 print("Here the parse tree for debug purposes: \n")
                 print(tree.pretty())
-            if interpeted_tree is not None:
-                print(interpeted_tree)
+            if interpreted_tree is not None:
+                print(interpreted_tree)
     elif args.script:
 
         with open(args.script, "r") as f:
