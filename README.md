@@ -118,4 +118,4 @@ The following test scripts are available:
 For both the execution modes, if you specify the flag `-d (--debug)` the debug mode will be activated and the Parse Tree will be printed in the terminal.
 
 ### Executable file execution
-You can run the executable file following the instructions in the pre-release **v0.1.0-alpha**.
+You can run the executable file for your operating system (Windows or MacOS) by following the instructions in the pre-release **v0.1.0-alpha**.
