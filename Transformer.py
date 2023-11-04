@@ -1,5 +1,5 @@
 # From Lark's Documentation:
-# The transfomer processes the parse tree bottom-up, starting from the leaves and going up to the root.
+# The transformer processes the parse tree bottom-up, starting from the leaves and going up to the root.
 # For each node it calls the related method according to the nodes's data, and uses the returned value to replace the
 # node, creating a new structure. When the transformer doesn't find the method for a node, it simply returns the node.
 
@@ -220,7 +220,7 @@ class TreeToJS(Transformer):
     @staticmethod
     def inequality(args):
         """
-        This method is used to check if two values are not equal. It simulates the JavaScript type coercition
+        This method is used to check if two values are not equal. It simulates the JavaScript type coercion
         :param args:
         :return:
         """
@@ -260,7 +260,7 @@ class TreeToJS(Transformer):
     def strict_equality(args):
         """
         This method is used to check if two values are equal. It is the === JavaScript operator,
-        so does not simulate the JavaScript type coercition
+        so does not simulate the JavaScript type coercion
         :param args:
         :return:
         """
@@ -270,7 +270,7 @@ class TreeToJS(Transformer):
     def strict_inequality(args):
         """
         This method is used to check if two values are not equal. It is the !== JavaScript operator,
-        so does not simulate the JavaScript type coercition
+        so does not simulate the JavaScript type coercion
         :param args:
         :return:
         """
@@ -283,7 +283,8 @@ class TreeToJS(Transformer):
     @staticmethod
     def greater_than(args):
         """
-        This method is used to check if the first value is greater than the second one. It simulates the JavaScript type coercition
+        This method is used to check if the first value is greater than the second one.
+        It simulates the JavaScript type coercion
         :param args:
         :return:
         """
@@ -322,7 +323,8 @@ class TreeToJS(Transformer):
     @staticmethod
     def greater_than_or_equal(args):
         """
-        This method is used to check if the first value is greater than or equal to the second one. It simulates the JavaScript type coercition
+        This method is used to check if the first value is greater than or equal to the second one.
+        It simulates the JavaScript type coercion
         :param args:
         :return:
         """
@@ -361,7 +363,8 @@ class TreeToJS(Transformer):
     @staticmethod
     def less_than(args):
         """
-        This method is used to check if the first value is less than the second one. It simulates the JavaScript type coercition
+        This method is used to check if the first value is less than the second one.
+        It simulates the JavaScript type coercion
         :param args:
         :return:
         """
@@ -400,7 +403,8 @@ class TreeToJS(Transformer):
     @staticmethod
     def less_than_or_equal(args):
         """
-        This method is used to check if the first value is less than or equal to the second one. It simulates the JavaScript type coercition
+        This method is used to check if the first value is less than or equal to the second one.
+        It simulates the JavaScript type coercion
         :param args:
         :return:
         """
@@ -439,7 +443,7 @@ class TreeToJS(Transformer):
     @staticmethod
     def add(args):
         """
-        This method is used to add two values. It simulates the JavaScript type coercition
+        This method is used to add two values. It simulates the JavaScript type coercion
         :param args:
         :return:
         """
@@ -466,7 +470,7 @@ class TreeToJS(Transformer):
     @staticmethod
     def sub(args):
         """
-        This method is used to subtract two values. It simulates the JavaScript type coercition
+        This method is used to subtract two values. It simulates the JavaScript type coercion
         :param args:
         :return:
         """
@@ -553,7 +557,7 @@ class TreeToJS(Transformer):
     @staticmethod
     def mul(args):
         """
-        This method is used to multiply two values. It simulates the JavaScript type coercition
+        This method is used to multiply two values. It simulates the JavaScript type coercion
         :param args:
         :return:
         """
@@ -640,7 +644,7 @@ class TreeToJS(Transformer):
     @staticmethod
     def div(args):
         """
-        This method is used to divide two values. It simulates the JavaScript type coercition
+        This method is used to divide two values. It simulates the JavaScript type coercion
         :param args:
         :return:
         """
@@ -727,7 +731,7 @@ class TreeToJS(Transformer):
     @staticmethod
     def negative(args):
         """
-        This method is used to negate a value. It simulates the JavaScript type coercition
+        This method is used to negate a value. It simulates the JavaScript type coercion
         :param args:
         :return:
         """
@@ -752,7 +756,7 @@ class TreeToJS(Transformer):
     @staticmethod
     def logical_not(args):
         """
-        This method is used to negate a boolean value. It simulates the JavaScript type coercition
+        This method is used to negate a boolean value. It simulates the JavaScript type coercion
         :param args:
         :return:
         """
@@ -784,7 +788,7 @@ class TreeToJS(Transformer):
     @staticmethod
     def factor(args):
         """
-        This method is used to substitute the nodes of the parse tree passed in the args parameter with computed the value.
+        This method is used to substitute the nodes of the parse tree passed in the args parameter with computed value.
         :param args:
         :return:
         """

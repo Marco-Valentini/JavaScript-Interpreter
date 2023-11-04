@@ -14,7 +14,7 @@ class SymbolTable:
         Inserts a new identifier in the symbol table
         :param identifier: JavaScript variable binding
         :param attributes: can be another dictionary, containing the variable attributes
-        :return:
+        :return: None
         """
         if attributes['type']:
             if attributes['type'] == float:
@@ -30,8 +30,8 @@ class SymbolTable:
     def find(self, identifier):
         """
         Retrieves the attributes of the required identifier
-        :param identifier:
-        :return:
+        :param identifier: JavaScript variable binding
+        :return: the attributes of the required identifier
         """
         if identifier in self.table.keys():
             return self.table[identifier]
@@ -41,17 +41,17 @@ class SymbolTable:
     def delete(self, identifier):
         """
         Deletes the required identifier from the symbol table
-        :param identifier:
-        :return:
+        :param identifier: JavaScript variable binding
+        :return: None
         """
         del self.table[identifier]
 
     def update(self, identifier, attributes):
         """
         Updates the attributes of the required identifier
-        :param identifier:
-        :param attributes:
-        :return:
+        :param identifier: JavaScript variable binding
+        :param attributes: can be another dictionary, containing the variable attributes
+        :return: None
         """
         if attributes['type']:
             if attributes['type'] == float:
@@ -63,5 +63,6 @@ class SymbolTable:
             elif attributes['type'] == list:
                 attributes['type'] = 'Array'
         self.table[identifier] = attributes
+
 
 symbol_table = SymbolTable()

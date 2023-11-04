@@ -112,9 +112,11 @@ class JavaScriptInterpreter(Interpreter):
                 for i in range(len(parameter_list)):
                     if parameter_list[i] in symbol_table.table.keys():
                         temp[parameter_list[i]] = deepcopy(symbol_table.table[parameter_list[i]])
-                        symbol_table.update(parameter_list[i], {'declaration': 'var', 'value': argument_list[i], 'type': type(argument_list[i])})
+                        symbol_table.update(parameter_list[i], {'declaration': 'var', 'value': argument_list[i],
+                                                                'type': type(argument_list[i])})
                     else:
-                        symbol_table.insert(parameter_list[i], {'declaration': 'var', 'value': argument_list[i], 'type': type(argument_list[i])})
+                        symbol_table.insert(parameter_list[i], {'declaration': 'var', 'value': argument_list[i],
+                                                                'type': type(argument_list[i])})
                 if function_body.data == 'block':
                     for i in range(len(function_body.children)):
                         if function_body.children[i].data == 'return_statement':
