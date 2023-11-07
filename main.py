@@ -2,7 +2,7 @@ from lark import Lark, UnexpectedInput
 from lark.exceptions import UnexpectedToken
 from Interpreter import JavaScriptInterpreter
 from error_handling import *
-from argparse import ArgumentParser  # to provide Command Line Interface (CLI)
+from argparse import ArgumentParser  # to provide Command Line Interface (CLI) command and flags (i.e., to execute scripts)
 
 import os
 
@@ -19,12 +19,13 @@ parser = Lark.open(grammar_file_path, parser='lalr', debug=True)
 def parse(javascript_script):
     """
     Wrapper for the parser.parse method including error handling
-    :param javascript_script:
+    :param javascript_script: script given as input from CLI command
     :return:
     """
     try:
         tree = parser.parse(javascript_script)
     except UnexpectedInput as u:
+        # find some lexical or syntactic error
         exc_class = u.match_examples(parser.parse, {
             MissingClosingParenthesisAfterCondition: ['if (a == b',
                                                       'if (a == b { return foo }',
@@ -95,17 +96,17 @@ def parse(javascript_script):
             raise
         raise exc_class(u.get_context(javascript_script), u.line, u.column)
     else:
-        return tree
+        return tree # return the parse tree
 
 
 def main():
     argument_parser = ArgumentParser(description="JavaScript Interpreter", epilog="Enjoy the interpreter!")
-    argument_parser.add_argument("-s", "--script", help="JavaScript script to be interpreted", type=str)
+    argument_parser.add_argument("-s", "--script", help="JavaScript script to be interpreted", type=str) # execute a script from a file
     argument_parser.add_argument("-c", "--console", help="Starts the interpreter in console mode",
-                                 action="store_true")
+                                 action="store_true") # execute the interpreter in console mode
     argument_parser.add_argument("-d", "--debug", help="Prints the tree of the process for debug purposes",
-                                 action="store_true")
-    # get the arguments from the command line instruction
+                                 action="store_true") # print the parse tree for debug purposes
+    # get the arguments from the command line instruction (e.g., the path of the script to be executed)
     args = argument_parser.parse_args()
 
     if args.console or args.script is None:  # if no script is provided, the interpreter starts in console mode
@@ -113,11 +114,12 @@ def main():
             try:
                 console = input('JS> ')
                 if console == "" or console.startswith("//") or (console.startswith("/*") and console.endswith("*/")):
+                    # ignore comments
                     continue
             except EOFError:
                 break
             try:
-                tree = parse(console)
+                tree = parse(console) # obtain the parse tree by parsing the input from the console
             except UnexpectedInput as i:
                 print(f"LexicalError: scanning failed due to unexpected input at line {i.line} and column {i.column}\n")
                 continue
@@ -140,7 +142,7 @@ def main():
                 print(e)
                 continue
             try:
-                interpreted_tree = JavaScriptInterpreter().visit(tree)
+                interpreted_tree = JavaScriptInterpreter().visit(tree) # interpret the parse tree
             except IsNotAFunction as e:
                 print(e)
                 continue
@@ -150,7 +152,7 @@ def main():
             if interpreted_tree is not None:
                 print(interpreted_tree)
     elif args.script:
-
+        # if a script is given, execute it
         with open(args.script, "r") as f:
             file = f.read()
             try:

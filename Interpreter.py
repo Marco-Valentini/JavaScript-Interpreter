@@ -1,7 +1,7 @@
 # From Lark's Documentation:
 # The interpreter walks the tree starting at the root, it visits the tree from the root to the leaves (top-down).
 # For each node it calls its methods (inherited) according to tree.data. Differently from transformer, the interpreter
-# does not visit the sub-branches, unless it is explicitly told to do so.
+# does not automatically visit the sub-branches, unless it is explicitly told to do so.
 from copy import deepcopy
 
 # Interpreter allows to implement branching, loops and functions
@@ -43,7 +43,7 @@ class JavaScriptInterpreter(Interpreter):
         condition = js_transformer.transform(tree.children[0])
         while condition not in js_falsy_values:  # JavaScript falsy values
             val = self.visit(tree.children[1])
-            condition = js_transformer.transform(tree.children[0])
+            condition = js_transformer.transform(tree.children[0]) # update the condition
         if type(val) == list:
             return val[-1]
         else:
@@ -71,7 +71,7 @@ class JavaScriptInterpreter(Interpreter):
             identifier = tree.children[1]
             if identifier in reserved_words:
                 raise ReservedWordAsIdentifier
-            if len(tree.children) == 5:
+            if len(tree.children) == 5:  # if there are no parameters
                 parameter_list = []
                 function_body = tree.children[4]  # it is a subtree
             else:
@@ -81,7 +81,7 @@ class JavaScriptInterpreter(Interpreter):
                     parameter_list = tree.children[3].children
                 function_body = tree.children[5]  # it is a subtree
             symbol_table.insert(identifier, {'declaration': declaration, 'parameter_list': parameter_list,
-                                             'body': function_body, 'type': declaration})
+                                             'body': function_body, 'type': declaration}) # insert the function body a subtree to be evaluated later
             return 'undefined'
         except ReservedWordAsIdentifier:
             print('SyntaxError: Unexpected token ' + identifier)
@@ -95,7 +95,7 @@ class JavaScriptInterpreter(Interpreter):
                 argument_list = []  # if there are no arguments
             elif len(tree.children[2].children) > 1:  # if there are more than one argument
                 argument_list = js_transformer.transform(tree.children[2]).children
-            else:  # if there is only one argument
+            else:  # if there is only one argument convert to list to adapt to the interface used for other cases
                 argument_list = [js_transformer.transform(tree.children[2])]
             # search for the function in the symbol table
             function = symbol_table.find(identifier)
@@ -119,7 +119,7 @@ class JavaScriptInterpreter(Interpreter):
                 js_transformer.symbol_table = new_symbol_table
 
                 if function_body.data == 'block':
-                    for i in range(len(function_body.children)):
+                    for i in range(len(function_body.children)): # in case of a block, execute all the statements in it
                         if function_body.children[i].data == 'return_statement':
                             out = js_transformer.transform(function_body.children[i])
                             # update the symbol table of the transformer
@@ -135,13 +135,13 @@ class JavaScriptInterpreter(Interpreter):
                     # update the symbol table of the transformer
                     js_transformer.symbol_table = deepcopy(new_symbol_table.parent)
                     return out
-                else:
+                else: # the body doesn't contain a return statement, neither a block
                     visited_body = self.visit(function_body)
                 # update the symbol table of the transformer
                 js_transformer.symbol_table = deepcopy(new_symbol_table.parent)
                 return 'undefined'
             else:
-                raise IsNotAFunction
+                raise IsNotAFunction # the identifier is not associated with a function
         except IsNotAFunction:
             print('TypeError: ' + identifier + ' is not a function')
         except ReferenceError:
@@ -163,7 +163,7 @@ class JavaScriptInterpreter(Interpreter):
         for i in range(len(tree.children)):
             if str(type(tree.children[i])) == "<class 'lark.tree.Tree'>":
                 if tree.children[i].data == 'function_call':
-                    tree.children[i] = self.visit(tree.children[i])
+                    tree.children[i] = self.visit(tree.children[i])  # this is required to assign the value of a function call to a variable
         return js_transformer.transform(tree)
 
     @staticmethod

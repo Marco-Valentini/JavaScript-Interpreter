@@ -1,6 +1,6 @@
 # From Lark's Documentation:
 # The transformer processes the parse tree bottom-up, starting from the leaves and going up to the root.
-# For each node it calls the related method according to the nodes's data, and uses the returned value to replace the
+# For each node it calls the related method according to the data in it, and uses the returned value to replace the
 # node, creating a new structure. When the transformer doesn't find the method for a node, it simply returns the node.
 
 from lark.visitors import Transformer
@@ -12,7 +12,6 @@ class TreeToJS(Transformer):
     This class extends Lark's transformer class, which provides a convenient interface to process the parse tree that
     Lark returns. Each method of the class corresponds to one of the rules in the grammar.
     """
-    # constructor
     def __init__(self, symbol_table):
         super().__init__()
         self.symbol_table = symbol_table
@@ -20,7 +19,7 @@ class TreeToJS(Transformer):
     @staticmethod
     def print_statement(args):
         if not args:
-            print('undefined')  # when no message is specified
+            print('undefined')  # when no message is specified (this changes if executed in Chrome console or in replit workspace)
         else:
             print(args[0])
 
@@ -42,7 +41,7 @@ class TreeToJS(Transformer):
     def variable_statement(self, args):
         try:
             if len(args) == 2:  # variable declaration (es. let a)
-                if args[1].value in reserved_words:
+                if args[1].value in reserved_words:  # check that the chosen identifier can be used
                     wrong_id = args[1].value
                     raise ReservedWordAsIdentifier
                 if args[1].value in self.symbol_table.table.keys() and \
@@ -53,7 +52,7 @@ class TreeToJS(Transformer):
                                                         'type': 'undefined'})
                 return 'undefined'
 
-            elif len(args) == 3:  # variable assignment (es. a = 2)
+            elif len(args) == 3:  # variable assignment (es. a = 2) there is included also the assignment of an array to a binding (es. a = [1,2,3])
                 if args[0].value in reserved_words:
                     wrong_id = args[0].value
                     raise ReservedWordAsIdentifier
@@ -99,7 +98,7 @@ class TreeToJS(Transformer):
                 self.symbol_table.update(args[0].value, {'declaration': self.symbol_table.find(args[0].value)['declaration'],
                                                     'value': arr, 'type': type(arr)})
         except IdentifierAlreadyDeclared:
-            print('SyntaxError: Identifier ' + args[1].value + ' has already been declared')
+            print('SyntaxError: Identifier ' + args[1].value + ' has already been declared') # print customized error messages
         except ConstAssignmentTypeError:
             print('TypeError: Assignment to constant variable')
         except ReservedWordAsIdentifier:
@@ -185,8 +184,6 @@ class TreeToJS(Transformer):
     def equality(args):
         """
         This method is used to check if two values are equal. It simulates the JavaScript type coercion
-        :param args:
-        :return:
         """
         if type(args[0]) in [float, int] and type(args[1]) in [float, int]:
             return args[0] == args[1]
@@ -224,8 +221,6 @@ class TreeToJS(Transformer):
     def inequality(args):
         """
         This method is used to check if two values are not equal. It simulates the JavaScript type coercion
-        :param args:
-        :return:
         """
         if type(args[0]) in [float, int] and type(args[1]) in [float, int]:
             return args[0] != args[1]
@@ -264,8 +259,6 @@ class TreeToJS(Transformer):
         """
         This method is used to check if two values are equal. It is the === JavaScript operator,
         so does not simulate the JavaScript type coercion
-        :param args:
-        :return:
         """
         return args[0] == args[1]
 
@@ -274,8 +267,6 @@ class TreeToJS(Transformer):
         """
         This method is used to check if two values are not equal. It is the !== JavaScript operator,
         so does not simulate the JavaScript type coercion
-        :param args:
-        :return:
         """
         return args[0] != args[1]
 
@@ -288,8 +279,6 @@ class TreeToJS(Transformer):
         """
         This method is used to check if the first value is greater than the second one.
         It simulates the JavaScript type coercion
-        :param args:
-        :return:
         """
         if type(args[0]) in [float, int] and type(args[1]) in [float, int]:
             return args[0] > args[1]
@@ -328,8 +317,6 @@ class TreeToJS(Transformer):
         """
         This method is used to check if the first value is greater than or equal to the second one.
         It simulates the JavaScript type coercion
-        :param args:
-        :return:
         """
         if type(args[0]) in [float, int] and type(args[1]) in [float, int]:
             return args[0] >= args[1]
@@ -368,8 +355,6 @@ class TreeToJS(Transformer):
         """
         This method is used to check if the first value is less than the second one.
         It simulates the JavaScript type coercion
-        :param args:
-        :return:
         """
         if type(args[0]) in [float, int] and type(args[1]) in [float, int]:
             return args[0] < args[1]
@@ -408,8 +393,6 @@ class TreeToJS(Transformer):
         """
         This method is used to check if the first value is less than or equal to the second one.
         It simulates the JavaScript type coercion
-        :param args:
-        :return:
         """
         if type(args[0]) in [float, int] and type(args[1]) in [float, int]:
             return args[0] <= args[1]
@@ -447,8 +430,6 @@ class TreeToJS(Transformer):
     def add(args):
         """
         This method is used to add two values. It simulates the JavaScript type coercion
-        :param args:
-        :return:
         """
         if type(args[0]) in [float, int, bool] and type(args[1]) in [float, int, bool] or type(args[0]) == type(args[1]):
             return args[0] + args[1]
@@ -474,8 +455,6 @@ class TreeToJS(Transformer):
     def sub(args):
         """
         This method is used to subtract two values. It simulates the JavaScript type coercion
-        :param args:
-        :return:
         """
         if type(args[0]) in [float, int, bool] and type(args[1]) in [float, int, bool]:
             return args[0] - args[1]
@@ -561,8 +540,6 @@ class TreeToJS(Transformer):
     def mul(args):
         """
         This method is used to multiply two values. It simulates the JavaScript type coercion
-        :param args:
-        :return:
         """
         if type(args[0]) in [float, int, bool] and type(args[1]) in [float, int, bool]:
             return args[0] * args[1]
@@ -648,8 +625,6 @@ class TreeToJS(Transformer):
     def div(args):
         """
         This method is used to divide two values. It simulates the JavaScript type coercion
-        :param args:
-        :return:
         """
         if type(args[0]) in [float, int, bool] and type(args[1]) in [float, int, bool]:
             return args[0] / args[1]
@@ -735,8 +710,6 @@ class TreeToJS(Transformer):
     def negative(args):
         """
         This method is used to negate a value. It simulates the JavaScript type coercion
-        :param args:
-        :return:
         """
         if type(args[0]) in [float, int]:
             return -args[0]
@@ -760,8 +733,6 @@ class TreeToJS(Transformer):
     def logical_not(args):
         """
         This method is used to negate a boolean value. It simulates the JavaScript type coercion
-        :param args:
-        :return:
         """
         if type(args[0]) == bool:
             return not args[0]
@@ -791,8 +762,6 @@ class TreeToJS(Transformer):
     def factor(self, args):
         """
         This method is used to substitute the nodes of the parse tree passed in the args parameter with computed value.
-        :param args:
-        :return:
         """
         if type(args[0]) in [str, int, float, list]:  # case of template literal or array
             return args[0]
@@ -808,6 +777,7 @@ class TreeToJS(Transformer):
             elif args[0].value == 'false':
                 return False
         elif args[0].type == 'IDENTIFIER':
+            # an identifier can be associated with a function or with a value
             try:
                 if self.symbol_table.find(args[0].value)['declaration'] == 'function':
                     return f"function {args[0].value}"
@@ -848,7 +818,7 @@ class TreeToJS(Transformer):
                 if arr == 'NaN':
                     return 'undefined'
                 return len(arr)
-        except TypeError:
+        except TypeError: # es if is not an array, neither a string
             return 'undefined'
         except ValueError:
             return 'undefined'
