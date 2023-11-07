@@ -6,7 +6,7 @@ from error_handling import *
 class SymbolTable:
     def __init__(self, initial_state=None):
         if initial_state is None:
-            initial_state = {}
+            initial_state = {} # symbol table is organized as a dictionary
         self.table = initial_state
 
     def insert(self, identifier, attributes):
@@ -53,6 +53,7 @@ class SymbolTable:
         :param attributes: can be another dictionary, containing the variable attributes
         :return: None
         """
+        # assign the corresponding JavaScript type to the variable
         if attributes['type']:
             if attributes['type'] == float:
                 attributes['type'] = 'Number'
@@ -64,5 +65,5 @@ class SymbolTable:
                 attributes['type'] = 'Array'
         self.table[identifier] = attributes
 
-
+# create an instance of symbol table
 symbol_table = SymbolTable()

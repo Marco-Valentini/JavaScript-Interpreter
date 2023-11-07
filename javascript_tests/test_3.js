@@ -1,4 +1,4 @@
-// input a mark and say if it the exam is passed or not
+// input a mark and say if the exam is passed or not
 continue_condition = true
 while (continue_condition === true) {
     let mark = prompt("Please enter your mark: ");
@@ -42,7 +42,7 @@ while (continue_condition === true) {
 // print the array
 console.log(`The marks inserted are ${marks}`)
 console.log(`The number of marks inserted is ${marks.length}`)
-console.log("Computing the number of sufficient and unsufficient marks with a function")
+console.log("Computing the number of sufficient and insufficient marks with a function")
 
 function count_sufficient_marks(marks) {
     n_marks = marks.length
@@ -62,4 +62,4 @@ function count_sufficient_marks(marks) {
 
 count = count_sufficient_marks(marks)
 console.log(`The number of sufficient marks is ${count[0]}`)
-console.log(`The number of unsufficient marks is ${count[1]}`)
+console.log(`The number of insufficient marks is ${count[1]}`)

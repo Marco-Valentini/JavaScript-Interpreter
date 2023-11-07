@@ -32,7 +32,7 @@ console.log(`Subtraction of string and number "hello" - 5 : ${"hello" - 5}`);  /
 console.log(`Multiplication of string and number "hello" * 5 : ${"hello" * 5}`);  // NaN
 console.log(`Division of string and number "hello" / 5 : ${"hello" / 5}`);  // NaN
 
- // Relational operators
+// Relational operators
 console.log("Testing the relational operators:")
 console.log(`x > y is equal to ${x > y}`);  // true
 console.log(`x < y is equal to ${x < y}`);  // false
