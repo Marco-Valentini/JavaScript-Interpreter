@@ -103,18 +103,17 @@ class JavaScriptInterpreter(Interpreter):
             if function['declaration'] == 'function':
                 # take the parameter list
                 parameter_list = function['parameter_list']
-                # copy the global parameter
-                temp = {}
 
                 # create a new symbol table for the function
-                new_symbol_table = SymbolTable(parent=symbol_table)
+                new_symbol_table = SymbolTable(parent=deepcopy(js_transformer.symbol_table))
 
                 # take the function body
                 function_body = function['body']
 
                 for i in range(len(parameter_list)):
                     # insert the parameter in the new symbol table
-                    new_symbol_table.insert(parameter_list[i], symbol_table.find(parameter_list[i]))
+                    new_symbol_table.insert(parameter_list[i], {'declaration': 'var', 'value': argument_list[i],
+                                                                'type': type(argument_list[i])})
 
                 # update the symbol table of the transformer
                 js_transformer.symbol_table = new_symbol_table
@@ -124,22 +123,22 @@ class JavaScriptInterpreter(Interpreter):
                         if function_body.children[i].data == 'return_statement':
                             out = js_transformer.transform(function_body.children[i])
                             # update the symbol table of the transformer
-                            js_transformer.symbol_table = new_symbol_table.parent
+                            js_transformer.symbol_table = deepcopy(new_symbol_table.parent)
                             return out
                         else:
                             visited_body = self.visit(function_body.children[i])
                     # update the symbol table of the transformer
-                    js_transformer.symbol_table = new_symbol_table.parent
+                    js_transformer.symbol_table = deepcopy(new_symbol_table.parent)
                     return 'undefined'
                 elif function_body.data == 'return_statement':
                     out = js_transformer.transform(function_body)
                     # update the symbol table of the transformer
-                    js_transformer.symbol_table = new_symbol_table.parent
+                    js_transformer.symbol_table = deepcopy(new_symbol_table.parent)
                     return out
                 else:
                     visited_body = self.visit(function_body)
                 # update the symbol table of the transformer
-                js_transformer.symbol_table = new_symbol_table.parent
+                js_transformer.symbol_table = deepcopy(new_symbol_table.parent)
                 return 'undefined'
             else:
                 raise IsNotAFunction

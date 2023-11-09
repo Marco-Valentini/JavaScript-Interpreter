@@ -18,6 +18,15 @@ function divide(a, b) {
     return a/b;
 }
 
+function redeclare(){
+    // this function will declare two variables with the same name as the global variables a and b
+    // but there will be no error since the variables are declared inside a function (a different scope)
+    let a = 100;
+    let b = 200;
+    console.log(`inside the function 'redeclare' the value of the variable a is ${a}`);
+    console.log(`inside the function 'redeclare' the value of the variable b is ${b}`);
+}
+
 /* this is a
 multiline comment */
 
@@ -31,6 +40,11 @@ console.log(`The sum of ${a} and ${b} is ${add_a_b}`);
 console.log(`The difference of ${a} and ${b} is ${subtract_a_b}`);
 console.log(`The product of ${a} and ${b} is ${multiply_a_b}`);
 console.log(`The quotient of ${a} and ${b} is ${divide_a_b}`);
+
+// call function redeclare
+redeclare();
+console.log(`outside the function 'redeclare' the value of the variable a is ${a}`);
+console.log(`outside the function 'redeclare' the value of the variable b is ${b}`);
 
 let c = 10;
 
@@ -48,8 +62,8 @@ array = operate(a, b);
 console.log("the variables after the function 'operate' is called are: ")
 console.log(`the array returned by the function 'operate' is: ${array}`)
 console.log("the length of the array returned by the function 'operate' is array.length = " + array.length)
-console.log(`global variable a =  ${a}  (not modified by the function 'operate')`)
-console.log(`global variable b =  ${b}  (not modified by the function 'operate')`)
+console.log(`global variable a =  ${a}  (not modified by either the function 'operate' or the function 'redeclare')`)
+console.log(`global variable b =  ${b}  (not modified by either the function 'operate' or the function 'redeclare')`)
 console.log(`global variable c =  ${c}  (modified by the function 'operate')`)
 console.log(`local variable a =  ${array[0]} (note that it is different from the global variable a)`)
 console.log(`local variable b =  ${array[1]} (note that it is different from the global variable b)`)
