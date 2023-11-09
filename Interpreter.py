@@ -7,11 +7,11 @@ from copy import deepcopy
 # Interpreter allows to implement branching, loops and functions
 from lark.visitors import Interpreter
 from Transformer import TreeToJS
-from SymbolTable import symbol_table
+from SymbolTable import symbol_table, SymbolTable
 from error_handling import *
 
 # the transformer is used to visit the tree from the leaves to the root (bottom-up)
-js_transformer = TreeToJS()
+js_transformer = TreeToJS(symbol_table=symbol_table)
 
 js_falsy_values = ['undefined', 'null', 'NaN', False, 0, "", "0"]
 
@@ -106,38 +106,40 @@ class JavaScriptInterpreter(Interpreter):
                 # copy the global parameter
                 temp = {}
 
+                # create a new symbol table for the function
+                new_symbol_table = SymbolTable(parent=symbol_table)
+
                 # take the function body
                 function_body = function['body']
 
                 for i in range(len(parameter_list)):
-                    if parameter_list[i] in symbol_table.table.keys():
-                        temp[parameter_list[i]] = deepcopy(symbol_table.table[parameter_list[i]])
-                        symbol_table.update(parameter_list[i], {'declaration': 'var', 'value': argument_list[i],
-                                                                'type': type(argument_list[i])})
-                    else:
-                        symbol_table.insert(parameter_list[i], {'declaration': 'var', 'value': argument_list[i],
-                                                                'type': type(argument_list[i])})
+                    # insert the parameter in the new symbol table
+                    new_symbol_table.insert(parameter_list[i], symbol_table.find(parameter_list[i]))
+
+                # update the symbol table of the transformer
+                js_transformer.symbol_table = new_symbol_table
+
                 if function_body.data == 'block':
                     for i in range(len(function_body.children)):
                         if function_body.children[i].data == 'return_statement':
                             out = js_transformer.transform(function_body.children[i])
-                            for key in temp.keys():
-                                symbol_table.update(key, temp[key])
+                            # update the symbol table of the transformer
+                            js_transformer.symbol_table = new_symbol_table.parent
                             return out
                         else:
                             visited_body = self.visit(function_body.children[i])
-                    for key in temp.keys():
-                        symbol_table.update(key, temp[key])
+                    # update the symbol table of the transformer
+                    js_transformer.symbol_table = new_symbol_table.parent
                     return 'undefined'
                 elif function_body.data == 'return_statement':
                     out = js_transformer.transform(function_body)
-                    for key in temp.keys():
-                        symbol_table.update(key, temp[key])
+                    # update the symbol table of the transformer
+                    js_transformer.symbol_table = new_symbol_table.parent
                     return out
                 else:
                     visited_body = self.visit(function_body)
-                for key in temp.keys():
-                    symbol_table.update(key, temp[key])
+                # update the symbol table of the transformer
+                js_transformer.symbol_table = new_symbol_table.parent
                 return 'undefined'
             else:
                 raise IsNotAFunction

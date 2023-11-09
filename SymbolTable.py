@@ -4,10 +4,11 @@ from error_handling import *
 
 
 class SymbolTable:
-    def __init__(self, initial_state=None):
+    def __init__(self, initial_state=None, parent=None):
         if initial_state is None:
             initial_state = {}
         self.table = initial_state
+        self.parent = parent
 
     def insert(self, identifier, attributes):
         """
@@ -33,8 +34,11 @@ class SymbolTable:
         :param identifier: JavaScript variable binding
         :return: the attributes of the required identifier
         """
+        # search in the current symbol table, if not search in the parent symbol table until the root
         if identifier in self.table.keys():
             return self.table[identifier]
+        elif self.parent is not None:
+            return self.parent.find(identifier)
         else:
             raise ReferenceError
 
@@ -44,7 +48,13 @@ class SymbolTable:
         :param identifier: JavaScript variable binding
         :return: None
         """
-        del self.table[identifier]
+        # search in the current symbol table, if not search in the parent symbol table until the root
+        if identifier in self.table.keys():
+            del self.table[identifier]
+        elif self.parent is not None:
+            self.parent.delete(identifier)
+        else:
+            raise ReferenceError
 
     def update(self, identifier, attributes):
         """
@@ -62,7 +72,13 @@ class SymbolTable:
                 attributes['type'] = 'Boolean'
             elif attributes['type'] == list:
                 attributes['type'] = 'Array'
-        self.table[identifier] = attributes
+        # search in the current symbol table, if not search in the parent symbol table until the root
+        if identifier in self.table.keys():
+            self.table[identifier] = attributes
+        elif self.parent is not None:
+            self.parent.update(identifier, attributes)
+        else:
+            raise ReferenceError
 
 
 symbol_table = SymbolTable()
