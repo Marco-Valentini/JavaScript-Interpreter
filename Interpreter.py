@@ -31,29 +31,29 @@ class JavaScriptInterpreter(Interpreter):
             true_branch = self.visit(tree.children[1])  # visit the true branch
             if not true_branch:
                 js_transformer.symbol_table = deepcopy(
-                    new_symbol_table.parent)  # update the symbol table of the transformer
+                    js_transformer.symbol_table.parent)  # update the symbol table of the transformer
                 return 'undefined'
             elif type(true_branch) == list:
                 js_transformer.symbol_table = deepcopy(
-                    new_symbol_table.parent)  # update the symbol table of the transformer
+                    js_transformer.symbol_table.parent)  # update the symbol table of the transformer
                 return true_branch[-1]
             else:
                 js_transformer.symbol_table = deepcopy(
-                    new_symbol_table.parent)  # update the symbol table of the transformer
+                    js_transformer.symbol_table.parent)  # update the symbol table of the transformer
                 return true_branch
         elif len(tree.children) == 3:  # if there is else branch
             false_branch = self.visit(tree.children[2])  # visit the false branch
             if not false_branch:
                 js_transformer.symbol_table = deepcopy(
-                    new_symbol_table.parent)  # update the symbol table of the transformer
+                    js_transformer.symbol_table.parent)  # update the symbol table of the transformer
                 return 'undefined'
             elif type(false_branch) == list:
                 js_transformer.symbol_table = deepcopy(
-                    new_symbol_table.parent)  # update the symbol table of the transformer
+                    js_transformer.symbol_table.parent)  # update the symbol table of the transformer
                 return false_branch[-1]
             else:
                 js_transformer.symbol_table = deepcopy(
-                    new_symbol_table.parent)  # update the symbol table of the transformer
+                    js_transformer.symbol_table.parent)  # update the symbol table of the transformer
                 return false_branch
 
 
