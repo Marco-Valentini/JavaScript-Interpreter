@@ -21,23 +21,41 @@ class JavaScriptInterpreter(Interpreter):
         return self.visit_children(tree)
 
     def if_statement(self, tree):
+
         condition = js_transformer.transform(tree.children[0])
+
+        new_symbol_table = SymbolTable(parent=deepcopy(js_transformer.symbol_table))  # create a new symbol table for the if statement
+        js_transformer.symbol_table = new_symbol_table  # update the symbol table of the transformer
+
         if condition not in js_falsy_values:  # JavaScript falsy values
             true_branch = self.visit(tree.children[1])  # visit the true branch
             if not true_branch:
+                js_transformer.symbol_table = deepcopy(
+                    new_symbol_table.parent)  # update the symbol table of the transformer
                 return 'undefined'
             elif type(true_branch) == list:
+                js_transformer.symbol_table = deepcopy(
+                    new_symbol_table.parent)  # update the symbol table of the transformer
                 return true_branch[-1]
             else:
+                js_transformer.symbol_table = deepcopy(
+                    new_symbol_table.parent)  # update the symbol table of the transformer
                 return true_branch
         elif len(tree.children) == 3:  # if there is else branch
             false_branch = self.visit(tree.children[2])  # visit the false branch
             if not false_branch:
+                js_transformer.symbol_table = deepcopy(
+                    new_symbol_table.parent)  # update the symbol table of the transformer
                 return 'undefined'
             elif type(false_branch) == list:
+                js_transformer.symbol_table = deepcopy(
+                    new_symbol_table.parent)  # update the symbol table of the transformer
                 return false_branch[-1]
             else:
+                js_transformer.symbol_table = deepcopy(
+                    new_symbol_table.parent)  # update the symbol table of the transformer
                 return false_branch
+
 
     def while_statement(self, tree):
         """
@@ -55,23 +73,23 @@ class JavaScriptInterpreter(Interpreter):
                 for i in range(len(tree.children[1].children)):
                     if tree.children[1].children[i].data == 'return_statement':
                         out = self.visit(tree.children[1].children[i])
-                        js_transformer.symbol_table = deepcopy(new_symbol_table.parent)
+                        js_transformer.symbol_table = deepcopy(js_transformer.symbol_table.parent)
                         return out
                     else:
-                        visited_body = self.visit(tree.children[1].children[i])
+                        out = self.visit(tree.children[1].children[i])
             elif tree.children[1].data == 'return_statement':
                 out = self.visit(tree.children[1])
-                js_transformer.symbol_table = deepcopy(new_symbol_table.parent)
+                js_transformer.symbol_table = deepcopy(js_transformer.symbol_table.parent)
                 return out
             else:
-                visited_body = self.visit(tree.children[1])
+                out = self.visit(tree.children[1])
             condition = js_transformer.transform(tree.children[0])  # evaluate the condition
-        js_transformer.symbol_table = deepcopy(new_symbol_table.parent)  # update the symbol table of the transformer
+        js_transformer.symbol_table = deepcopy(js_transformer.symbol_table.parent)  # update the symbol table of the transformer
 
-        if type(visited_body) == list:
-            return visited_body[-1]
+        if type(out) == list:
+            return out[-1]
         else:
-            return visited_body
+            return out
 
     def ternary_condition_statement(self, tree):
         condition = js_transformer.transform(tree.children[0])

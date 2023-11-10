@@ -71,11 +71,14 @@ class TreeToJS(Transformer):
                 if args[1].value in reserved_words:
                     wrong_id = args[1].value
                     raise ReservedWordAsIdentifier
-                if args[1].value in self.symbol_table.table.keys():
-                    if self.symbol_table.find(args[1].value)['declaration'] == 'var':
-                        self.symbol_table.update(args[1].value, {'declaration': args[0].value, 'value': args[3],
-                                                            'type': type(args[3])})
-                    else:
+
+                # var declaration has not a scope and can be redeclared
+                if self.symbol_table.exist(args[1].value) and self.symbol_table.find(args[1].value)['declaration'] == 'var':
+                    self.symbol_table.update(args[1].value, {'declaration': args[0].value, 'value': args[3],
+                                                             'type': type(args[3])})
+
+                elif args[1].value in self.symbol_table.table.keys():  # the variable has already been declared in the current scope
+                    if self.symbol_table.find(args[1].value)['declaration'] in ['let', 'const']:
                         raise IdentifierAlreadyDeclared
                 else:
                     self.symbol_table.insert(args[1].value, {'declaration': args[0].value, 'value': args[3],
