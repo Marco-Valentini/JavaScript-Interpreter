@@ -1,7 +1,8 @@
 // input a mark and say if the exam is passed or not
 continue_condition = true
+let mark;
 while (continue_condition === true) {
-    let mark = prompt("Please enter your mark: ");
+    mark = prompt("Please enter your mark: ");
     if (mark >= 0 && mark <= 30) {
         console.log(`Your mark is valid : ${mark}`);
         continue_condition = false // valid input, we can accept it
@@ -9,6 +10,7 @@ while (continue_condition === true) {
         console.log("Invalid input, please try again");
     }
 }
+console.log(mark)
 if (mark >= 18 && mark <= 22) {
     console.log("You passed the exam with sufficient mark");
 } else if (mark >= 23 && mark <= 26){
@@ -27,7 +29,7 @@ let marks = []
 let i = 0
 while (continue_condition === true) {
     let temp = prompt("Do you want to insert a mark? (Y/N): ");
-    if (temp == "Y") {
+    if (temp == "Y" || temp == "y") {
         let mark = prompt("Please enter a mark between 1 and 30: ");
         if (mark >= 0 && mark <= 30) {
         console.log(`Your mark is valid : ${mark}`);

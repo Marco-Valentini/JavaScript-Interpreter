@@ -28,6 +28,20 @@ class SymbolTable:
                 attributes['type'] = 'Array'
         self.table[identifier] = attributes
 
+    def exist(self, identifier):
+        """
+        Checks if the required identifier exists in the symbol table
+        :param identifier: JavaScript variable binding
+        :return: True if the identifier exists, False otherwise
+        """
+        # search in the current symbol table, if not search in the parent symbol table until the root
+        if identifier in self.table.keys():
+            return True
+        elif self.parent is not None:
+            return self.parent.exist(identifier)
+        else:
+            return False
+
     def find(self, identifier):
         """
         Retrieves the attributes of the required identifier

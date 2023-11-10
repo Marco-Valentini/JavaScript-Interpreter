@@ -40,14 +40,38 @@ class JavaScriptInterpreter(Interpreter):
                 return false_branch
 
     def while_statement(self, tree):
-        condition = js_transformer.transform(tree.children[0])
-        while condition not in js_falsy_values:  # JavaScript falsy values
-            val = self.visit(tree.children[1])
-            condition = js_transformer.transform(tree.children[0]) # update the condition
-        if type(val) == list:
-            return val[-1]
+        """
+        while statement has its own block scope, thus we have to create a new symbol table to manage this scope
+        """
+        condition = js_transformer.transform(tree.children[0])  # evaluate the condition
+
+        new_symbol_table = SymbolTable(parent=deepcopy(js_transformer.symbol_table))  # create a new symbol table for the while statement
+
+        js_transformer.symbol_table = new_symbol_table  # update the symbol table of the transformer
+
+        while condition not in js_falsy_values:
+            js_transformer.symbol_table.table = {}  # clear the scope for the next iteration
+            if tree.children[1].data == 'block':
+                for i in range(len(tree.children[1].children)):
+                    if tree.children[1].children[i].data == 'return_statement':
+                        out = self.visit(tree.children[1].children[i])
+                        js_transformer.symbol_table = deepcopy(new_symbol_table.parent)
+                        return out
+                    else:
+                        visited_body = self.visit(tree.children[1].children[i])
+            elif tree.children[1].data == 'return_statement':
+                out = self.visit(tree.children[1])
+                js_transformer.symbol_table = deepcopy(new_symbol_table.parent)
+                return out
+            else:
+                visited_body = self.visit(tree.children[1])
+            condition = js_transformer.transform(tree.children[0])  # evaluate the condition
+        js_transformer.symbol_table = deepcopy(new_symbol_table.parent)  # update the symbol table of the transformer
+
+        if type(visited_body) == list:
+            return visited_body[-1]
         else:
-            return val
+            return visited_body
 
     def ternary_condition_statement(self, tree):
         condition = js_transformer.transform(tree.children[0])

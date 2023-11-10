@@ -56,7 +56,7 @@ class TreeToJS(Transformer):
                 if args[0].value in reserved_words:
                     wrong_id = args[0].value
                     raise ReservedWordAsIdentifier
-                if args[0].value in self.symbol_table.table.keys():
+                if self.symbol_table.exist(args[0].value):
                     if self.symbol_table.find(args[0].value)['declaration'] == 'const':
                         raise ConstAssignmentTypeError
                     else:
@@ -86,7 +86,7 @@ class TreeToJS(Transformer):
                 if args[0].value in reserved_words:
                     wrong_id = args[0].value
                     raise ReservedWordAsIdentifier
-                if args[0].value in self.symbol_table.table.keys():
+                if self.symbol_table.exist(args[0].value):
                     arr = self.symbol_table.find(args[0].value)['value']
                     if args[2] >= len(arr):
                         # pad intermediate cells with undefined
@@ -95,7 +95,7 @@ class TreeToJS(Transformer):
                         arr.append(args[5])
                     else:
                         arr[args[2]] = args[5]  # update the value
-                self.symbol_table.update(args[0].value, {'declaration': self.symbol_table.find(args[0].value)['declaration'],
+                    self.symbol_table.update(args[0].value, {'declaration': self.symbol_table.find(args[0].value)['declaration'],
                                                     'value': arr, 'type': type(arr)})
         except IdentifierAlreadyDeclared:
             print('SyntaxError: Identifier ' + args[1].value + ' has already been declared') # print customized error messages
